@@ -55,17 +55,13 @@ public class Judge0ApiService {
 
     public SubmissionRequest createHttpSubmissionRequestFromCode(String plainCode   ){
         SubmissionRequest request = new SubmissionRequest();
-
-        // Using language_id 52 as in the working curl example (for C code)
         request.setLanguageId(52);
 
         String encodedCode = Base64.getEncoder()
                 .encodeToString(plainCode.getBytes(StandardCharsets.UTF_8));
         request.setSourceCode(encodedCode);
 
-        // Set stdin as expected by the API (using the same value as in the curl)
         request.setStdin("SnVkZ2Uw");
-
         return request;
     }
 
