@@ -26,9 +26,9 @@ public class Judge0ApiService {
     @Value("${judge0.api.host}")
     private String judge0Host;
 
-    private static final int POLLING_INTERVAL_IN_MILLIS = 500;
+    private static final int POLLING_INTERVAL_IN_MILLIS = 1000;
 
-    private static final int MAXIMUM_POLLING_ATTEMPTS = 3;
+    private static final int MAXIMUM_POLLING_ATTEMPTS = 5;
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
