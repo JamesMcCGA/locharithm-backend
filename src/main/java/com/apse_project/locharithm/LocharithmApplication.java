@@ -14,11 +14,8 @@
 			ApplicationContext context = SpringApplication.run(LocharithmApplication.class, args);
 			Judge0ApiService judge0ApiService = context.getBean(Judge0ApiService.class);
 	
-			// string of C code
-			String code = ("print(\"hello world\")");
-	
-			// integer code representing languages, for example Python is 71
-			int languageCode = 71;
+			String code = "";
+			int languageCode = 0;
 
 			// submitting request and printing response
 			ResponseEntity<String> responseFromApi = judge0ApiService.submitCode(code, languageCode);
