@@ -150,7 +150,6 @@ public class Judge0ApiService {
 
                 int statusId = jsonNode.get("status").get("id").asInt();
                 if (statusId != 1 && statusId != 2) {
-                    System.out.println("Final submission status reached: " + jsonNode.get("status").get("description").asText());
                     break;
                 }
 
