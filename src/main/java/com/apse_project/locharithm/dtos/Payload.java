@@ -7,5 +7,6 @@ import lombok.Setter;
 @Setter
 public class Payload {
     private String source_code;
+    private int problem_id;
     private int language_id;
 }
