@@ -65,12 +65,15 @@ public class Judge0ApiService {
 
                     String acceptanceStatus = responseJsonNode.get("status").get("description").asText();
                     testResults.put(testCase.getId(), acceptanceStatus);
+                    System.out.println(acceptanceStatus);
 
                 } catch (Exception e) {
                     System.out.println("Failed to extract token from JSON: " + e.getMessage());
                     e.printStackTrace();
                     testResults.put(testCase.getId(), "Error: Failed to parse response");
                 }
+
+                System.out.println("Test case " + testCase.getId() + " processed");
             } else {
                 System.out.println("Failed to submit code: " + responseFromSubmissionEndpoint.getStatusCode());
                 System.out.println(responseFromSubmissionEndpoint.getBody());
