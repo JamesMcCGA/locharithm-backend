@@ -46,11 +46,9 @@ public class Judge0ApiService {
 
         HashMap<Integer, String> testResults = new HashMap<>();
         for (TestCases testCase : testCases) {
-            // Ensure stdin and expected output have correct formatting
             String stdinFormatted = testCase.getTestCaseInput().trim() + "\n";
             String expectedOutputFormatted = testCase.getTestCaseOutput().trim() + "\n";
 
-            // Create submission request
             SubmissionRequest request = createHttpSubmissionRequestFromCode(plainCode, stdinFormatted, expectedOutputFormatted, languageCode);
             HttpHeaders requestHeaders = createHttpHeaders();
             ResponseEntity<String> responseFromSubmissionEndpoint = postToSubmissionEndpoint(request, requestHeaders);
@@ -61,24 +59,12 @@ public class Judge0ApiService {
                 try {
                     JsonNode jsonNode = objectMapper.readTree(body);
                     String token = jsonNode.get("token").asText();
-                    System.out.println("Submission token: " + token);
 
-                    // Poll Judge0 for the result
                     ResponseEntity<String> finalResponse = getSubmissionResult(token, problemId);
-
-                    // Debugging - Print Judge0 full response
-                    System.out.println("Full Judge0 Response: " + finalResponse.getBody());
-
                     JsonNode responseJsonNode = objectMapper.readTree(finalResponse.getBody());
 
-                    // Check if "status" exists before accessing it
-                    if (responseJsonNode.get("status") != null) {
-                        String acceptanceStatus = responseJsonNode.get("status").get("description").asText();
-                        testResults.put(testCase.getId(), acceptanceStatus);
-                    } else {
-                        System.out.println("Error: 'status' field is missing in the Judge0 response!");
-                        testResults.put(testCase.getId(), "Error: No status in response");
-                    }
+                    String acceptanceStatus = responseJsonNode.get("status").get("description").asText();
+                    testResults.put(testCase.getId(), acceptanceStatus);
 
                 } catch (Exception e) {
                     System.out.println("Failed to extract token from JSON: " + e.getMessage());
@@ -92,8 +78,7 @@ public class Judge0ApiService {
             }
         }
 
-        // Convert test results to JSON and return
-        String jsonResults = "{}"; // Default empty JSON object
+        String jsonResults = "{}";
         try {
             jsonResults = objectMapper.writeValueAsString(testResults);
         } catch (Exception e) {
@@ -163,19 +148,12 @@ public class Judge0ApiService {
             try {
                 JsonNode jsonNode = objectMapper.readTree(response.getBody());
 
-                // Debugging: Print Judge0 full response
-                System.out.println("Judge0 Polling Response: " + response.getBody());
-
-                if (jsonNode.get("status") != null) {
-                    int statusId = jsonNode.get("status").get("id").asInt();
-                    if (statusId != 1 && statusId != 2) {
-                        System.out.println("Final submission status reached: " + jsonNode.get("status").get("description").asText());
-                        break;
-                    }
-                } else {
-                    System.out.println("Error: 'status' field is missing in Judge0 response!");
+                int statusId = jsonNode.get("status").get("id").asInt();
+                if (statusId != 1 && statusId != 2) {
+                    System.out.println("Final submission status reached: " + jsonNode.get("status").get("description").asText());
                     break;
                 }
+
             } catch (Exception e) {
                 System.out.println("Failed to parse submission result: " + e.getMessage());
                 e.printStackTrace();
