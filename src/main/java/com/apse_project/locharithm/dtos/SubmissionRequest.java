@@ -18,4 +18,7 @@ public class SubmissionRequest {
 
     @JsonProperty("stdin")
     private String stdin;
+
+    @JsonProperty("expected_output")
+    private String expectedOutput;
 }

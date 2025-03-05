@@ -15,9 +15,9 @@ public class AppConfig {
         restTemplate.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
         restTemplate.getInterceptors().add((request, body, execution) -> {
 //             for debugging, prints out the exact request being sent
-//            System.out.println("Request URI: " + request.getURI());
-//            System.out.println("Request Headers: " + request.getHeaders());
-//            System.out.println("Request Body: " + new String(body, StandardCharsets.UTF_8));
+            System.out.println("Request URI: " + request.getURI());
+            System.out.println("Request Headers: " + request.getHeaders());
+            System.out.println("Request Body: " + new String(body, StandardCharsets.UTF_8));
             return execution.execute(request, body);
         });
         return restTemplate;

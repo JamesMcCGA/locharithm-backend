@@ -1,5 +1,6 @@
 package com.apse_project.locharithm.service;
 
+import com.apse_project.locharithm.domain.TestCases;
 import com.apse_project.locharithm.dtos.SubmissionRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -12,12 +13,17 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
 
 @Service
 public class Judge0ApiService {
 
     @Autowired
     private RestTemplate restTemplate;
+
+    @Autowired
+    private TestCasesService testCasesService;
 
     // from spring properties
     @Value("${judge0.api.postEndpoint}")
@@ -33,62 +39,92 @@ public class Judge0ApiService {
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     /**
-     * Publicly accessible function to process a code submission end-to-end. Takes a string of plain code, as well as
-     * a language code (passed from front-end) and creates a HTTP request to the POST endpoint, then polls the GET endpoint
-     * until the submission is done processing.
-     *
-     * @param plainCode    the pure string of code to be processed
-     * @param languageCode the identifier of the programming language used
-     * @return the final API response from the GET endpoint
+     * Publicly accessible function to process a code submission end-to-end.
      */
-    public ResponseEntity<String> submitCode(String plainCode, int languageCode) {
-        SubmissionRequest request = createHttpSubmissionRequestFromCode(plainCode, languageCode);
-        HttpHeaders requestHeaders = createHttpHeaders();
-        ResponseEntity<String> responseFromSubmissionEndpoint = postToSubmissionEndpoint(request, requestHeaders);
+    public ResponseEntity<String> submitCode(String plainCode, int problemId, int languageCode) {
+        List<TestCases> testCases = testCasesService.getTestCasesByProblemId(problemId);
 
-        if (responseFromSubmissionEndpoint.getStatusCode().is2xxSuccessful()) {
-            String body = responseFromSubmissionEndpoint.getBody();
+        HashMap<Integer, String> testResults = new HashMap<>();
+        for (TestCases testCase : testCases) {
+            // Ensure stdin and expected output have correct formatting
+            String stdinFormatted = testCase.getTestCaseInput().trim() + "\n";
+            String expectedOutputFormatted = testCase.getTestCaseOutput().trim() + "\n";
 
-            // extract the token using Jackson - not sure if theres a lighter way to do this?
-            try {
-                JsonNode jsonNode = objectMapper.readTree(body);
-                String token = jsonNode.get("token").asText();
-                System.out.println("Submission token: " + token);
+            // Create submission request
+            SubmissionRequest request = createHttpSubmissionRequestFromCode(plainCode, stdinFormatted, expectedOutputFormatted, languageCode);
+            HttpHeaders requestHeaders = createHttpHeaders();
+            ResponseEntity<String> responseFromSubmissionEndpoint = postToSubmissionEndpoint(request, requestHeaders);
 
-                // Poll the GET endpoint until the submission is processed
-                ResponseEntity<String> finalResponse = getSubmissionResult(token);
-                return finalResponse;
-            } catch (Exception e) {
-                System.out.println("Failed to extract token from JSON: " + e.getMessage());
-                e.printStackTrace();
+            if (responseFromSubmissionEndpoint.getStatusCode().is2xxSuccessful()) {
+                String body = responseFromSubmissionEndpoint.getBody();
+
+                try {
+                    JsonNode jsonNode = objectMapper.readTree(body);
+                    String token = jsonNode.get("token").asText();
+                    System.out.println("Submission token: " + token);
+
+                    // Poll Judge0 for the result
+                    ResponseEntity<String> finalResponse = getSubmissionResult(token, problemId);
+
+                    // Debugging - Print Judge0 full response
+                    System.out.println("Full Judge0 Response: " + finalResponse.getBody());
+
+                    JsonNode responseJsonNode = objectMapper.readTree(finalResponse.getBody());
+
+                    // Check if "status" exists before accessing it
+                    if (responseJsonNode.get("status") != null) {
+                        String acceptanceStatus = responseJsonNode.get("status").get("description").asText();
+                        testResults.put(testCase.getId(), acceptanceStatus);
+                    } else {
+                        System.out.println("Error: 'status' field is missing in the Judge0 response!");
+                        testResults.put(testCase.getId(), "Error: No status in response");
+                    }
+
+                } catch (Exception e) {
+                    System.out.println("Failed to extract token from JSON: " + e.getMessage());
+                    e.printStackTrace();
+                    testResults.put(testCase.getId(), "Error: Failed to parse response");
+                }
+            } else {
+                System.out.println("Failed to submit code: " + responseFromSubmissionEndpoint.getStatusCode());
+                System.out.println(responseFromSubmissionEndpoint.getBody());
+                testResults.put(testCase.getId(), "Error: Submission Failed");
             }
-        } else {
-            System.out.println("Failed to submit code: " + responseFromSubmissionEndpoint.getStatusCode());
-            System.out.println(responseFromSubmissionEndpoint.getBody());
         }
-        return responseFromSubmissionEndpoint;
+
+        // Convert test results to JSON and return
+        String jsonResults = "{}"; // Default empty JSON object
+        try {
+            jsonResults = objectMapper.writeValueAsString(testResults);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return ResponseEntity.ok()
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(jsonResults);
     }
 
     /**
-     * Creates the HTTP request instance to be sent to the POST submission endpoint
-     * @param plainCode
-     * @param languageCode
-     * @return the HTTP request.
+     * Creates the HTTP request instance to be sent to the POST submission endpoint.
      */
-    private SubmissionRequest createHttpSubmissionRequestFromCode(String plainCode, int languageCode) {
+    private SubmissionRequest createHttpSubmissionRequestFromCode(String plainCode, String stdin, String expectedOutput, int languageCode) {
         SubmissionRequest request = new SubmissionRequest();
 
-        String encodedCode = Base64.getEncoder()
-                .encodeToString(plainCode.getBytes(StandardCharsets.UTF_8));
+        String encodedCode = Base64.getEncoder().encodeToString(plainCode.getBytes(StandardCharsets.UTF_8));
+        String encodedStdin = Base64.getEncoder().encodeToString(stdin.getBytes(StandardCharsets.UTF_8));
+        String encodedExpectedOutput = Base64.getEncoder().encodeToString(expectedOutput.getBytes(StandardCharsets.UTF_8));
+
         request.setSourceCode(encodedCode);
         request.setLanguageId(languageCode);
-        request.setStdin("SnVkZ2Uw");
+        request.setStdin(encodedStdin);
+        request.setExpectedOutput(encodedExpectedOutput);
         return request;
     }
 
+
     /**
      * Creates the HTTP headers to be used in the POST submission.
-     * @return the headers.
      */
     private HttpHeaders createHttpHeaders() {
         HttpHeaders headers = new HttpHeaders();
@@ -100,9 +136,6 @@ public class Judge0ApiService {
 
     /**
      * Post to the submission endpoint.
-     * @param submissionRequest the submission request
-     * @param requestHeaders the request headers
-     * @return The response entity returned from the submission endpoint.
      */
     private ResponseEntity<String> postToSubmissionEndpoint(SubmissionRequest submissionRequest, HttpHeaders requestHeaders) {
         HttpEntity<SubmissionRequest> entity = new HttpEntity<>(submissionRequest, requestHeaders);
@@ -114,17 +147,13 @@ public class Judge0ApiService {
     }
 
     /**
-     * Gets the result of the submission after posting to the submission endpoint. This endpoint uses a queue and therefore
-     * the result of the submission is not available immediately. I'm using a poll to work around this.
-     * @param token the unique identifier of the submission
-     * @return the final response entity
+     * Gets the result of the submission after posting to the submission endpoint.
      */
-    private ResponseEntity<String> getSubmissionResult(String token) {
+    private ResponseEntity<String> getSubmissionResult(String token, int problem_id) {
         String url = judge0PostEndpoint + "/" + token + "?base64_encoded=true";
         HttpHeaders headers = createHttpHeaders();
         HttpEntity<Void> entity = new HttpEntity<>(headers);
 
-        System.out.println(url);
         ResponseEntity<String> response = null;
         int attempt = 0;
 
@@ -133,9 +162,18 @@ public class Judge0ApiService {
 
             try {
                 JsonNode jsonNode = objectMapper.readTree(response.getBody());
-                int statusId = jsonNode.get("status").get("id").asInt();
-                if (statusId != 1 && statusId != 2) {
-                    System.out.println("Final submission status reached: " + jsonNode.get("status").get("description").asText());
+
+                // Debugging: Print Judge0 full response
+                System.out.println("Judge0 Polling Response: " + response.getBody());
+
+                if (jsonNode.get("status") != null) {
+                    int statusId = jsonNode.get("status").get("id").asInt();
+                    if (statusId != 1 && statusId != 2) {
+                        System.out.println("Final submission status reached: " + jsonNode.get("status").get("description").asText());
+                        break;
+                    }
+                } else {
+                    System.out.println("Error: 'status' field is missing in Judge0 response!");
                     break;
                 }
             } catch (Exception e) {
