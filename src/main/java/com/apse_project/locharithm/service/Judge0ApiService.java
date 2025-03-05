@@ -27,13 +27,9 @@ public class Judge0ApiService {
     @Value("${judge0.api.host}")
     private String judge0Host;
 
-    @Value("${judge0.api.key}")
-    private String judge0Key;
-
     public ResponseEntity<String> submitCode(SubmissionRequest request) {
         HttpHeaders headers = new HttpHeaders();
         headers.set("x-rapidapi-host", judge0Host);
-        headers.set("x-rapidapi-key", judge0Key);
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
 
@@ -49,7 +45,6 @@ public class Judge0ApiService {
     public String getLanguages() {
         HttpHeaders headers = new HttpHeaders();
         headers.set("x-rapidapi-host", judge0Host);
-        headers.set("x-rapidapi-key", judge0Key);
 
         HttpEntity<Void> entity = new HttpEntity<>(headers);
         ResponseEntity<String> result = restTemplate.exchange(
@@ -60,14 +55,13 @@ public class Judge0ApiService {
         return result.getBody();
     }
 
-    public SubmissionRequest createHttpSubmissionRequestFromCode(String plainCode) {
+    public SubmissionRequest createHttpSubmissionRequestFromCode(String plainCode, int languageCode) {
         SubmissionRequest request = new SubmissionRequest();
-        request.setLanguageId(52);
 
         String encodedCode = Base64.getEncoder()
                 .encodeToString(plainCode.getBytes(StandardCharsets.UTF_8));
         request.setSourceCode(encodedCode);
-
+        request.setLanguageId(languageCode);
         request.setStdin("SnVkZ2Uw");
         return request;
     }
