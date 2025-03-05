@@ -12,14 +12,6 @@
 	
 		public static void main(String[] args) {
 			ApplicationContext context = SpringApplication.run(LocharithmApplication.class, args);
-			Judge0ApiService judge0ApiService = context.getBean(Judge0ApiService.class);
-	
-			String code = "";
-			int languageCode = 0;
-
-			// submitting request and printing response
-			ResponseEntity<String> responseFromApi = judge0ApiService.submitCode(code, languageCode);
-			System.out.println(responseFromApi.getBody());
 		}
 	}
 	

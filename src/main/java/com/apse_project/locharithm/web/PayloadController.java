@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api")
+@CrossOrigin(origins="*")
 public class PayloadController {
 
     @Autowired
@@ -15,8 +16,10 @@ public class PayloadController {
 
     @PostMapping("/submit")
     public ResponseEntity<String> submitCode(@RequestBody Payload payload) {
-        String code = payload.getSourceCode();
-        int languageCode = payload.getLanguageCode();
+        String code = payload.getSource_code();
+        int languageCode = payload.getLanguage_id();
+        System.out.println(code);
+        System.out.println(languageCode);
         return judge0ApiService.submitCode(code, languageCode);
     }
 }
