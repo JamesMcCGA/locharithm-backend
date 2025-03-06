@@ -1,8 +1,7 @@
 package com.apse_project.locharithm.service;
 
-import com.apse_project.locharithm.dao.TestCasesDao;
-import com.apse_project.locharithm.dao.TestCasesDao;
-import com.apse_project.locharithm.domain.TestCases;
+import com.apse_project.locharithm.dao.TestCaseDao;
+import com.apse_project.locharithm.domain.TestCase;
 
 import org.springframework.stereotype.Service;
 
@@ -12,25 +11,25 @@ import java.util.Optional;
 @Service
 public class TestCasesService {
 
-    private final TestCasesDao testCaseDao;
+    private final TestCaseDao testCaseDao;
 
-    public TestCasesService(TestCasesDao testCaseDao) {
+    public TestCasesService(TestCaseDao testCaseDao) {
         this.testCaseDao = testCaseDao;
     }
 
-    public List<TestCases> getAllTestCases() {
-        return (List<TestCases>) testCaseDao.findAll();
+    public List<TestCase> getAllTestCases() {
+        return (List<TestCase>) testCaseDao.findAll();
     }
 
-    public Optional<TestCases> getTestCaseById(Integer id) {
+    public Optional<TestCase> getTestCaseById(Integer id) {
         return testCaseDao.findById(id);
     }
 
-    public List<TestCases> getTestCasesByProblemId(Integer problemId) {
+    public List<TestCase> getTestCasesByProblemId(Integer problemId) {
         return testCaseDao.findByProblem_ProblemId(problemId);
     }
 
-    public TestCases saveTestCase(TestCases testCase) {
+    public TestCase saveTestCase(TestCase testCase) {
         return testCaseDao.save(testCase);
     }
 

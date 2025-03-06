@@ -1,6 +1,6 @@
 package com.apse_project.locharithm.web;
 
-import com.apse_project.locharithm.domain.TestCases;
+import com.apse_project.locharithm.domain.TestCase;
 import com.apse_project.locharithm.service.TestCasesService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,24 +19,24 @@ public class TestCasesController {
     }
 
     @GetMapping
-    public List<TestCases> getAllTestCases() {
+    public List<TestCase> getAllTestCases() {
         return testCasesService.getAllTestCases();
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<TestCases> getTestCaseById(@PathVariable Integer id) {
-        Optional<TestCases> testCase = testCasesService.getTestCaseById(id);
+    public ResponseEntity<TestCase> getTestCaseById(@PathVariable Integer id) {
+        Optional<TestCase> testCase = testCasesService.getTestCaseById(id);
         return testCase.map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @GetMapping("/problem/{problemId}")
-    public List<TestCases> getTestCasesByProblemId(@PathVariable Integer problemId) {
+    public List<TestCase> getTestCasesByProblemId(@PathVariable Integer problemId) {
         return testCasesService.getTestCasesByProblemId(problemId);
     }
 
     @PostMapping
-    public TestCases createTestCase(@RequestBody TestCases testCase) {
+    public TestCase createTestCase(@RequestBody TestCase testCase) {
         return testCasesService.saveTestCase(testCase);
     }
 
