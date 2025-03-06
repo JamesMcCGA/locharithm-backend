@@ -14,6 +14,7 @@ import java.util.Optional;
 @RestController
 @RequestMapping(path="api/problems/")
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
+@CrossOrigin(origins="*")
 public class ProblemController {
 
     private final ProblemService problemService;
