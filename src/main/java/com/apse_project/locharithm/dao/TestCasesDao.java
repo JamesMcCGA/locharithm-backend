@@ -8,5 +8,5 @@ import java.util.List;
 
 @Repository
 public interface TestCasesDao extends CrudRepository<TestCases, Integer> {
-    List<TestCases> findByProblem_ProblemId(Integer problemId); // ✅ Fix here
+    List<TestCases> findByProblem_ProblemId(Integer problemId);
 }
