@@ -1,6 +1,6 @@
 package com.apse_project.locharithm.web;
 
-import com.apse_project.locharithm.dtos.Payload;
+import com.apse_project.locharithm.dtos.PayloadDto;
 import com.apse_project.locharithm.service.Judge0ApiService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -15,7 +15,7 @@ public class PayloadController {
     private Judge0ApiService judge0ApiService;
 
     @PostMapping("/submit")
-    public ResponseEntity<String> submitCode(@RequestBody Payload payload) {
+    public ResponseEntity<String> submitCode(@RequestBody PayloadDto payload) {
         String code = payload.getSource_code();
         int problemId = payload.getProblem_id();
         int languageCode = payload.getLanguage_id();

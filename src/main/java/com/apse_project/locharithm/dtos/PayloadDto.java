@@ -5,7 +5,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class Payload {
+public class PayloadDto {
     private String source_code;
     private int problem_id;
     private int language_id;
