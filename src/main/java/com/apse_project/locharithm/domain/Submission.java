@@ -19,7 +19,7 @@ public class Submission {
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
-    private Users user;
+    private User user;
 
     @ManyToOne
     @JoinColumn(name = "problem_id", nullable = false)

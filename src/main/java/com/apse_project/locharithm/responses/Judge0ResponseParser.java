@@ -3,7 +3,9 @@ package com.apse_project.locharithm.responses;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.stereotype.Component;
 
+@Component
 public class Judge0ResponseParser {
     private final ObjectMapper objectMapper = new ObjectMapper();
 
