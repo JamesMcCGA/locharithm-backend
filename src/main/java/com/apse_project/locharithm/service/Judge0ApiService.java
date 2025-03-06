@@ -1,74 +1,73 @@
 package com.apse_project.locharithm.service;
 
+import com.apse_project.locharithm.client.Judge0ApiClient;
+import com.apse_project.locharithm.domain.TestCase;
 import com.apse_project.locharithm.dtos.SubmissionRequest;
+import com.apse_project.locharithm.responses.Judge0ResponseParser;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.*;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 
-import java.nio.charset.StandardCharsets;
-import java.util.Base64;
-import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
 
 @Service
 public class Judge0ApiService {
 
     @Autowired
-    private RestTemplate restTemplate;
+    private Judge0ApiClient judge0ApiClient;
 
-    // from spring properties
-    @Value("${judge0.api.postEndpoint}")
-    private String judge0PostEndpoint;
+    @Autowired
+    private Judge0ResponseParser judge0ResponseParser;
 
-    @Value("${judge0.api.languagesEndpoint}")
-    private String judge0LanguagesEndpoint;
+    @Autowired
+    private TestCasesService testCasesService;
 
-    @Value("${judge0.api.host}")
-    private String judge0Host;
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
-    @Value("${judge0.api.key}")
-    private String judge0Key;
+    /**
+     * Publicly accessible function to process a code submission end-to-end.
+     */
+    public ResponseEntity<String> submitCode(String plainCode, int problemId, int languageCode) {
+        List<TestCase> testCases = testCasesService.getTestCasesByProblemId(problemId);
 
-    public ResponseEntity<String> submitCode(SubmissionRequest request) {
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("x-rapidapi-host", judge0Host);
-        headers.set("x-rapidapi-key", judge0Key);
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
+        HashMap<Integer, String> testResults = new HashMap<>();
+        for (TestCase testCase : testCases) {
+            String stdinFormatted = testCase.getTestCaseInput().trim() + "\n";
+            String expectedOutputFormatted = testCase.getTestCaseOutput().trim() + "\n";
 
-        HttpEntity<SubmissionRequest> entity = new HttpEntity<>(request, headers);
-        ResponseEntity<String> result = restTemplate.exchange(
-                judge0PostEndpoint,
-                HttpMethod.POST,
-                entity,
-                String.class);
-        return result;
-    }
+            SubmissionRequest request = judge0ApiClient.createHttpSubmissionRequestFromCode(plainCode, stdinFormatted, expectedOutputFormatted, languageCode);
+            HttpHeaders requestHeaders = judge0ApiClient.createHttpHeaders();
+            ResponseEntity<String> responseFromSubmissionEndpoint = judge0ApiClient.postToSubmissionEndpoint(request, requestHeaders);
 
-    public String getLanguages() {
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("x-rapidapi-host", judge0Host);
-        headers.set("x-rapidapi-key", judge0Key);
+            if (responseFromSubmissionEndpoint.getStatusCode().is2xxSuccessful()) {
+                String token = judge0ResponseParser.retrieveItemFromJsonBody(responseFromSubmissionEndpoint.getBody(), "token");
 
-        HttpEntity<Void> entity = new HttpEntity<>(headers);
-        ResponseEntity<String> result = restTemplate.exchange(
-                judge0LanguagesEndpoint,
-                HttpMethod.GET,
-                entity,
-                String.class);
-        return result.getBody();
-    }
+                ResponseEntity<String> finalResponse = judge0ApiClient.getSubmissionResult(token, problemId);
 
-    public SubmissionRequest createHttpSubmissionRequestFromCode(String plainCode) {
-        SubmissionRequest request = new SubmissionRequest();
-        request.setLanguageId(52);
+                String acceptanceStatus = judge0ResponseParser.retrieveItemFromJsonBody(finalResponse.getBody(), "description");
+                testResults.put(testCase.getId(), acceptanceStatus);
+                System.out.println("Test case " + testCase.getId() + " processed, " + acceptanceStatus);
 
-        String encodedCode = Base64.getEncoder()
-                .encodeToString(plainCode.getBytes(StandardCharsets.UTF_8));
-        request.setSourceCode(encodedCode);
+            } else {
+                System.out.println("Failed to submit code: " + responseFromSubmissionEndpoint.getStatusCode());
+                System.out.println(responseFromSubmissionEndpoint.getBody());
+                testResults.put(testCase.getId(), "Error: Submission Failed");
+            }
+        }
 
-        request.setStdin("SnVkZ2Uw");
-        return request;
+        String jsonResults = "{}";
+        try {
+            jsonResults = objectMapper.writeValueAsString(testResults);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return ResponseEntity.ok()
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(jsonResults);
     }
 }

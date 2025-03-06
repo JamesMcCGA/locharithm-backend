@@ -40,26 +40,29 @@
         </loadData>
     </changeSet>
 
-    <changeSet id="3" author="flemingc">
-        <createTable tableName="submission">
-            <column name="submission_id" type="INTEGER">
+    <changeSet id="3" author="devennyr">
+        <createTable tableName="test_cases">
+            <column name="test_case_id" type="INTEGER">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
-            <column name="user_id" type="INTEGER">
-                <constraints nullable="false" foreignKeyName="fk_submission_user"
-                             references="users(id)"/>
-            </column>
             <column name="problem_id" type="INTEGER">
-                <constraints nullable="false" foreignKeyName="fk_submission_problem"
-                             references="problem(problem_id)"/>
+                <constraints foreignKeyName="fk_test_cases_problem"
+                             references="problem(problem_id)"
+                             nullable="false"/>
             </column>
-            <column name="submission_outcome" type="TEXT"/>
-            <column name="exec_time" type="TEXT"/>
-            <column name="memory_used" type="TEXT"/>
-            <column name="language" type="TEXT"/>
-            <column name="code_size" type="TEXT"/>
+            <column name="test_case_input" type="TEXT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="test_case_output" type="TEXT">
+                <constraints nullable="false"/>
+            </column>
         </createTable>
+        <loadData tableName="test_cases" file="db/changelog/data/test_cases.csv">
+            <column name="test_case_id" type="numeric"/>
+            <column name="problem_id" type="numeric"/>
+            <column name="test_case_input" type="string"/>
+            <column name="test_case_output" type="string"/>
+        </loadData>
     </changeSet>
-
 
 </databaseChangeLog>

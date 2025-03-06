@@ -1,6 +1,6 @@
 package com.apse_project.locharithm.web;
 
-import com.apse_project.locharithm.dao.UsersDao;
+import com.apse_project.locharithm.dao.UserDao;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -14,7 +14,7 @@ import java.util.Map;
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class ExampleController {
 
-    private final UsersDao usersDao;
+    private final UserDao usersDao;
 
     @GetMapping(path="users/", params="id")
     public ResponseEntity<Map<String, String>> getUser(@RequestParam("id") int id) {
