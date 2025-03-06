@@ -1,3 +1,3 @@
-submission_id, user_id, problem_id, submission_outcome, exec_time, memory_used, language, code_size
-1, 1, 2, Outcome_Text, 0.1s, 10MB, C++, 1KB
-2, 2, 1, Another_Outcome_Text, 2s, 100MB, Python, 32KB
+submission_id,user_id,problem_id,submission_outcome,exec_time,memory_used,language,code_size
+1,1,2,"Outcome_Text","0.1s","10MB","C++","1KB"
+2,2,1,"Another_Outcome_Text","2s","100MB","Python","32KB"
