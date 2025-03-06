@@ -57,7 +57,7 @@
                 <constraints nullable="false"/>
             </column>
         </createTable>
-        <loadData tableName="test_cases" file="db/changelog/data/test_cases.csv">
+        <loadData tableName="test_cases" file="db/changelog/data/test_case.csv">
             <column name="test_case_id" type="numeric"/>
             <column name="problem_id" type="numeric"/>
             <column name="test_case_input" type="string"/>
