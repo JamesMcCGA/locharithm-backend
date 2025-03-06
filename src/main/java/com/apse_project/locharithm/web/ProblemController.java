@@ -1,6 +1,7 @@
 package com.apse_project.locharithm.web;
 
 import com.apse_project.locharithm.domain.Problem;
+import com.apse_project.locharithm.dtos.ProblemDto;
 import com.apse_project.locharithm.service.ProblemService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,8 +19,8 @@ public class ProblemController {
     private final ProblemService problemService;
 
     @GetMapping
-    public List<Problem> getProblems() {
-        return problemService.getProblems();
+    public List<ProblemDto> getProblemDtos() {
+        return problemService.getProblemDtos();
     }
 
     @GetMapping("/{id}")
