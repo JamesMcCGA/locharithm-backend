@@ -14,7 +14,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-public class Users {
+public class User {
 
     @Id
     @Column(name="id")
