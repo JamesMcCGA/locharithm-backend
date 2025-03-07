@@ -87,7 +87,8 @@ public class Judge0ApiClient {
 
             try {
                 JsonNode jsonNode = objectMapper.readTree(response.getBody());
-
+                String temp = jsonNode.get("status").get("description").asText();
+                System.out.println("YOYOYO: " + temp);
                 int statusId = jsonNode.get("status").get("id").asInt();
                 if (statusId != 1 && statusId != 2) {
                     break;
@@ -109,5 +110,44 @@ public class Judge0ApiClient {
             }
         }
         return response;
+    }
+
+    public String getSubmissionResultSimplified(String token, int problem_id){
+        String url = judge0PostEndpoint + "/" + token + "?base64_encoded=true";
+        HttpHeaders headers = createHttpHeaders();
+        HttpEntity<Void> entity = new HttpEntity<>(headers);
+
+        ResponseEntity<String> response;
+        String finalResponse=null;
+        int attempt = 0;
+
+        while (attempt < MAXIMUM_POLLING_ATTEMPTS) {
+            response = restTemplate.exchange(url, HttpMethod.GET, entity, String.class);
+
+            try {
+                JsonNode jsonNode = objectMapper.readTree(response.getBody());
+                String temp = jsonNode.get("status").get("description").asText();
+                int statusId = jsonNode.get("status").get("id").asInt();
+                if (statusId != 1 && statusId != 2) {
+                    finalResponse=temp;
+                    break;
+                }
+
+            } catch (Exception e) {
+                System.out.println("Failed to parse submission result: " + e.getMessage());
+                e.printStackTrace();
+                break;
+            }
+
+            attempt++;
+            try {
+                Thread.sleep(POLLING_INTERVAL_IN_MILLIS);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                System.out.println("Thread interrupted during sleep: " + e.getMessage());
+                break;
+            }
+        }
+        return finalResponse;
     }
 }
