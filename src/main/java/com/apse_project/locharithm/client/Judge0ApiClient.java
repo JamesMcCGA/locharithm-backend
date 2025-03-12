@@ -1,7 +1,7 @@
 package com.apse_project.locharithm.client;
 
 import com.apse_project.locharithm.dtos.SubmissionRequest;
-import com.fasterxml.jackson.databind.JsonNode;
+import com.apse_project.locharithm.responses.Judge0ResponseParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -17,6 +17,9 @@ import java.util.Collections;
 public class Judge0ApiClient {
     @Autowired
     private RestTemplate restTemplate;
+
+    @Autowired
+    private Judge0ResponseParser judge0ResponseParser;
 
     @Value("${judge0.api.postEndpoint}")
     private String judge0PostEndpoint;
@@ -71,31 +74,25 @@ public class Judge0ApiClient {
                 String.class);
     }
 
+
     /**
      * Gets the result of the submission after posting to the submission endpoint.
      */
-    public ResponseEntity<String> getSubmissionResult(String token, int problem_id) {
+    public String getSubmissionResult(String token){
         String url = judge0PostEndpoint + "/" + token + "?base64_encoded=true";
         HttpHeaders headers = createHttpHeaders();
         HttpEntity<Void> entity = new HttpEntity<>(headers);
 
-        ResponseEntity<String> response = null;
+        ResponseEntity<String> response;
+        String finalResponse=null;
         int attempt = 0;
 
         while (attempt < MAXIMUM_POLLING_ATTEMPTS) {
             response = restTemplate.exchange(url, HttpMethod.GET, entity, String.class);
-
-            try {
-                JsonNode jsonNode = objectMapper.readTree(response.getBody());
-
-                int statusId = jsonNode.get("status").get("id").asInt();
-                if (statusId != 1 && statusId != 2) {
-                    break;
-                }
-
-            } catch (Exception e) {
-                System.out.println("Failed to parse submission result: " + e.getMessage());
-                e.printStackTrace();
+            String temp = judge0ResponseParser.retrieveItemFromJsonBody(response.getBody(), "status.description");
+            int statusId = Integer.parseInt(judge0ResponseParser.retrieveItemFromJsonBody(response.getBody(), "status.id"));
+            if (statusId != 1 && statusId != 2) {
+                finalResponse=temp;
                 break;
             }
 
@@ -108,6 +105,6 @@ public class Judge0ApiClient {
                 break;
             }
         }
-        return response;
+        return finalResponse;
     }
 }

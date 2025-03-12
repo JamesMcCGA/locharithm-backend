@@ -45,16 +45,9 @@ public class Judge0ApiService {
 
             if (responseFromSubmissionEndpoint.getStatusCode().is2xxSuccessful()) {
                 String token = judge0ResponseParser.retrieveItemFromJsonBody(responseFromSubmissionEndpoint.getBody(), "token");
-
-                ResponseEntity<String> finalResponse = judge0ApiClient.getSubmissionResult(token, problemId);
-
-                String acceptanceStatus = judge0ResponseParser.retrieveItemFromJsonBody(finalResponse.getBody(), "description");
+                String acceptanceStatus = judge0ApiClient.getSubmissionResult(token);
                 testResults.put(testCase.getId(), acceptanceStatus);
-                System.out.println("Test case " + testCase.getId() + " processed, " + acceptanceStatus);
-
             } else {
-                System.out.println("Failed to submit code: " + responseFromSubmissionEndpoint.getStatusCode());
-                System.out.println(responseFromSubmissionEndpoint.getBody());
                 testResults.put(testCase.getId(), "Error: Submission Failed");
             }
         }
