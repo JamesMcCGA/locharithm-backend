@@ -2,7 +2,6 @@ package com.apse_project.locharithm.client;
 
 import com.apse_project.locharithm.dtos.SubmissionRequest;
 import com.apse_project.locharithm.responses.Judge0ResponseParser;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -79,7 +78,7 @@ public class Judge0ApiClient {
     /**
      * Gets the result of the submission after posting to the submission endpoint.
      */
-    public String getSubmissionResultSimplified(String token){
+    public String getSubmissionResult(String token){
         String url = judge0PostEndpoint + "/" + token + "?base64_encoded=true";
         HttpHeaders headers = createHttpHeaders();
         HttpEntity<Void> entity = new HttpEntity<>(headers);
