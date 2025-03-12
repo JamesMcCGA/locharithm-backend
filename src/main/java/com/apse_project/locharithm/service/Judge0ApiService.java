@@ -33,10 +33,7 @@ public class Judge0ApiService {
      */
     public ResponseEntity<String> submitCode(String plainCode, int problemId, int languageCode) {
         List<TestCase> testCases = testCasesService.getTestCasesByProblemId(problemId);
-        for(TestCase t: testCases){
-            System.out.println(t.getId());
-        }
-        // is getting the test cases
+
         HashMap<Integer, String> testResults = new HashMap<>();
         for (TestCase testCase : testCases) {
             String stdinFormatted = testCase.getTestCaseInput().trim() + "\n";
@@ -48,13 +45,9 @@ public class Judge0ApiService {
 
             if (responseFromSubmissionEndpoint.getStatusCode().is2xxSuccessful()) {
                 String token = judge0ResponseParser.retrieveItemFromJsonBody(responseFromSubmissionEndpoint.getBody(), "token");
-                String acceptanceStatus = judge0ApiClient.getSubmissionResultSimplified(token, problemId);
+                String acceptanceStatus = judge0ApiClient.getSubmissionResultSimplified(token);
                 testResults.put(testCase.getId(), acceptanceStatus);
-                System.out.println("Test case " + testCase.getId() + " processed, " + acceptanceStatus);
-
             } else {
-                System.out.println("Failed to submit code: " + responseFromSubmissionEndpoint.getStatusCode());
-                System.out.println(responseFromSubmissionEndpoint.getBody());
                 testResults.put(testCase.getId(), "Error: Submission Failed");
             }
         }
