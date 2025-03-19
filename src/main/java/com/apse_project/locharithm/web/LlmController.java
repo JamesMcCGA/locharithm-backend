@@ -27,6 +27,6 @@ public class LlmController {
     @PostMapping("/queryLlm")
     public ResponseEntity<String> requestAi(@RequestBody LlmRequestDto llmRequestDto) throws IOException, InterruptedException {
         String query = llmRequestDto.getPrompt();
-        return openApiClient.sendChatMessage("A problem to double an integer.");
+        return openApiClient.sendChatMessage(query);
     }
 }

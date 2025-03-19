@@ -27,35 +27,60 @@ public class OpenApiClient {
         this.gson = new Gson();
     }
 
-    /**
-     * Sends a chat message to the OpenAI API and returns the response.
-     * The API call includes a system message to prime the context, followed by the user prompt.
-     *
-     * @param prompt The user's prompt.
-     * @return The generated response from the API.
-     * @throws IOException if an I/O error occurs.
-     * @throws InterruptedException if the operation is interrupted.
-     */
     public ResponseEntity<String> sendChatMessage(String prompt) throws IOException, InterruptedException {
         JsonObject requestBody = new JsonObject();
-        requestBody.addProperty("model", "gpt-4o");
+        requestBody.addProperty("model", "gpt-4");
 
         JsonArray messages = new JsonArray();
         JsonObject systemMessage = new JsonObject();
         systemMessage.addProperty("role", "system");
-        systemMessage.addProperty("content", "You are a problem generator for a competitive programming platform. "
-                + "When given a brief problem description (e.g., 'A problem to double an integer'), "
-                + "generate a complete problem statement that includes the following sections:\n"
-                + "1) Problem Name \n"
-                + "2) Input Constraints \n"
-                + "3) Input Format\n"
-                + "4) Output Format\n"
-                + "5) Sample Input and Sample Output\n"
-                + "6) Test Cases\n"
-                + "Always use these headings exactly as written. If you do not understand what is being asked, explicitly say so.");
+        systemMessage.addProperty("content",
+                "You are a problem generator for a competitive programming platform. "
+                        + "When given a description such as 'A problem to double an integer', "
+                        + "you must respond using ONLY plain text (no Markdown, bold, underscores, etc.) "
+                        + "and produce EXACTLY the following sections verbatim:\n\n"
+                        + "1) Problem Name\n"
+                        + "2) Input Constraints\n"
+                        + "3) Input Format\n"
+                        + "4) Output Format\n"
+                        + "5) Sample Input and Sample Output\n"
+                        + "6) Test Cases\n\n"
+                        + "Under heading (5), use:\n"
+                        + "Sample Input 1:\n"
+                        + "[some sample value]\n"
+                        + "Sample Output 1:\n"
+                        + "[some sample value]\n\n"
+                        + "Sample Input 2:\n"
+                        + "[some sample value]\n"
+                        + "Sample Output 2:\n"
+                        + "[some sample value]\n\n"
+                        + "Under heading (6), use up to five labeled test cases:\n"
+                        + "Test Case Input 1:\n"
+                        + "...\n"
+                        + "Test Case Output 1:\n"
+                        + "...\n\n"
+                        + "Test Case Input 2:\n"
+                        + "...\n"
+                        + "Test Case Output 2:\n"
+                        + "...\n\n"
+                        + "Test Case Input 3:\n"
+                        + "...\n"
+                        + "Test Case Output 3:\n"
+                        + "...\n\n"
+                        + "Test Case Input 4:\n"
+                        + "...\n"
+                        + "Test Case Output 4:\n"
+                        + "...\n\n"
+                        + "Test Case Input 5:\n"
+                        + "...\n"
+                        + "Test Case Output 5:\n"
+                        + "...\n\n"
+                        + "DO NOT add extra labels or headings, do not skip or rename them. "
+                        + "Include edge cases in your test cases. Negatives, extremely large, etc, etc. Cover all bases. "
+                        + "If you do not understand what is being asked, explicitly say so."
+        );
         messages.add(systemMessage);
 
-        // User message with the provided prompt.
         JsonObject userMessage = new JsonObject();
         userMessage.addProperty("role", "user");
         userMessage.addProperty("content", prompt);
@@ -71,7 +96,6 @@ public class OpenApiClient {
                 .build();
 
         HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-
         if (response.statusCode() == 200) {
             JsonObject jsonResponse = gson.fromJson(response.body(), JsonObject.class);
             JsonArray choices = jsonResponse.getAsJsonArray("choices");
@@ -87,76 +111,82 @@ public class OpenApiClient {
             return ResponseEntity.status(response.statusCode())
                     .body("API call failed with status " + response.statusCode() + ": " + response.body());
         }
-
     }
 
-    /**
-     * Parses the API's reply to extract the problem sections based on Markdown-style headings.
-     *
-     * @param reply The full text reply from the API.
-     * @return A JsonObject containing the parsed sections.
-     */
-    private JsonObject parseResponse(String reply) {
-        JsonObject result = new JsonObject();
-        String problemNameStart = "1) Problem Name";
-        String inputConstraintsStart = "2) Input Constraints";
-        String inputFormatStart = "3) Input Format";
-        String outputFormatStart = "4) Output Format";
+    public JsonObject parseResponse(String reply) {
+        String pNameStart = "1) Problem Name";
+        String inConstStart = "2) Input Constraints";
+        String inFormatStart = "3) Input Format";
+        String outFormatStart = "4) Output Format";
         String sampleIOStart = "5) Sample Input and Sample Output";
-        String testCasesStart = "6) Test Cases";
+        String testStart = "6) Test Cases";
 
-        String problemName = extractSection(reply, problemNameStart, inputConstraintsStart);
-        String inputConstraints = extractSection(reply, inputConstraintsStart, inputFormatStart);
-        String inputFormat = extractSection(reply, inputFormatStart, outputFormatStart);
-        String outputFormat = extractSection(reply, outputFormatStart, sampleIOStart);
-        String sampleInputOutput = extractSection(reply, sampleIOStart, testCasesStart);
-        String testCases = extractSection(reply, testCasesStart, null);
+        String problemName = extractSection(reply, pNameStart, inConstStart);
+        String inputConstraints = extractSection(reply, inConstStart, inFormatStart);
+        String inputFormat = extractSection(reply, inFormatStart, outFormatStart);
+        String outputFormat = extractSection(reply, outFormatStart, sampleIOStart);
+        String sampleInputOutput = extractSection(reply, sampleIOStart, testStart);
+        String testCases = extractSection(reply, testStart, null);
 
-        result.addProperty("problem_name", problemName);
-        result.addProperty("input_constraints", inputConstraints);
-        result.addProperty("input_format", inputFormat);
-        result.addProperty("output_format", outputFormat);
-        result.addProperty("sample_input_output", sampleInputOutput);
-        result.addProperty("test_cases", testCases);
+        String sampleInput1 = extractLineAfterLabel(sampleInputOutput, "Sample Input 1:");
+        String sampleOutput1 = extractLineAfterLabel(sampleInputOutput, "Sample Output 1:");
+        String sampleInput2 = extractLineAfterLabel(sampleInputOutput, "Sample Input 2:");
+        String sampleOutput2 = extractLineAfterLabel(sampleInputOutput, "Sample Output 2:");
+
+        JsonObject result = new JsonObject();
+        result.addProperty("problemName", problemName);
+        result.addProperty("inputConstraints", inputConstraints);
+        result.addProperty("inputFormat", inputFormat);
+        result.addProperty("outputFormat", outputFormat);
+        result.addProperty("sampleInput1", sampleInput1);
+        result.addProperty("sampleOutput1", sampleOutput1);
+        result.addProperty("sampleInput2", sampleInput2);
+        result.addProperty("sampleOutput2", sampleOutput2);
+
+        for (int i = 1; i <= 5; i++) {
+            String tcIn = extractLineAfterLabel(testCases, "Test Case Input " + i + ":");
+            String tcOut = extractLineAfterLabel(testCases, "Test Case Output " + i + ":");
+            result.addProperty("testCaseInput" + i, tcIn);
+            result.addProperty("testCaseOutput" + i, tcOut);
+        }
+
         return result;
     }
 
-    /**
-     * Helper method to extract text between a start and an end marker.
-     * If endMarker is null, extracts to the end of the text.
-     *
-     * @param text The full text.
-     * @param startMarker The beginning marker.
-     * @param endMarker The ending marker (or null to go to the end).
-     * @return The extracted section, trimmed of whitespace.
-     */
     private String extractSection(String text, String startMarker, String endMarker) {
         int startIndex = text.indexOf(startMarker);
-        if (startIndex == -1) {
-            return "";
-        }
+        if (startIndex == -1) return "";
         startIndex += startMarker.length();
+
         int endIndex;
         if (endMarker != null) {
             endIndex = text.indexOf(endMarker, startIndex);
-            if (endIndex == -1) {
-                endIndex = text.length();
-            }
+            if (endIndex == -1) endIndex = text.length();
         } else {
             endIndex = text.length();
         }
         return text.substring(startIndex, endIndex).trim();
     }
 
+    private String extractLineAfterLabel(String text, String label) {
+        int i = text.indexOf(label);
+        if (i == -1) return "";
+        i += label.length();
+        while (i < text.length() && (text.charAt(i) == ' ' || text.charAt(i) == '\n' || text.charAt(i) == '\r')) {
+            i++;
+        }
+        int nb = text.indexOf("\n", i);
+        if (nb == -1) nb = text.length();
+        return text.substring(i, nb).trim();
+    }
+
     public static void main(String[] args) {
         OpenApiClient client = new OpenApiClient();
         try {
-            String reply = String.valueOf(client.sendChatMessage("A problem to double an integer."));
-            System.out.println("Full ChatGPT response:\n" + reply + "\n");
-
+            ResponseEntity<String> apiResponse = client.sendChatMessage("A problem to double an integer.");
+            String reply = apiResponse.getBody();
             JsonObject parsedResponse = client.parseResponse(reply);
-            System.out.println("Parsed JSON response:");
-            System.out.println(client.gson.toJson(parsedResponse));
+            System.out.println(parsedResponse);
         } catch (Exception e) {
             e.printStackTrace();
         }
