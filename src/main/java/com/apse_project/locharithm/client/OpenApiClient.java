@@ -11,7 +11,9 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Component;
 
+@Component
 public class OpenApiClient {
 
     private static final String API_KEY = "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";

@@ -2,7 +2,6 @@ package com.apse_project.locharithm.web;
 
 import com.apse_project.locharithm.client.OpenApiClient;
 import com.apse_project.locharithm.dtos.LlmRequestDto;
-import com.apse_project.locharithm.dtos.PayloadDto;
 import com.apse_project.locharithm.service.Judge0ApiService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -20,6 +19,10 @@ public class LlmController {
 
     @Autowired
     private OpenApiClient openApiClient;
+
+    public LlmController(Judge0ApiService judge0ApiService) {
+        this.judge0ApiService = judge0ApiService;
+    }
 
     @PostMapping("/queryLlm")
     public ResponseEntity<String> requestAi(@RequestBody LlmRequestDto llmRequestDto) throws IOException, InterruptedException {
