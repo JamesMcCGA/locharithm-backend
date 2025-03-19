@@ -5,6 +5,7 @@ import com.apse_project.locharithm.dtos.LlmRequestDto;
 import com.apse_project.locharithm.service.Judge0ApiService;
 import com.google.gson.JsonObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,12 +27,17 @@ public class LlmController {
     }
 
     @PostMapping("/queryLlm")
-    public JsonObject requestAi(@RequestBody LlmRequestDto llmRequestDto) throws IOException, InterruptedException {
-        String query = llmRequestDto.getPrompt();
-        ResponseEntity<String> apiResponse = openApiClient.sendChatMessage(query);
-        String reply = apiResponse.getBody();
-
-        JsonObject parsedResponse = openApiClient.parseResponse(reply);
-        return parsedResponse;
+    public ResponseEntity<JsonObject> requestAi(@RequestBody LlmRequestDto llmRequestDto) {
+        try {
+            String query = llmRequestDto.getPrompt();
+            ResponseEntity<String> apiResponse = openApiClient.sendChatMessage(query);
+            String reply = apiResponse.getBody();
+            JsonObject parsedResponse = openApiClient.parseResponse(reply);
+            return ResponseEntity.ok(parsedResponse);
+        } catch (IOException | InterruptedException e) {
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(null);
+        }
     }
 }
