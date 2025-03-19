@@ -11,6 +11,7 @@ public class Judge0ResponseParser {
 
     public String retrieveItemFromJsonBody(String body, String targetPath) {
         try {
+
             JsonNode jsonNode = objectMapper.readTree(body);
             String[] keys = targetPath.split("\\.");
             for (String key : keys) {
