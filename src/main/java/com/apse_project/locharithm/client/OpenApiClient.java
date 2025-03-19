@@ -46,12 +46,12 @@ public class OpenApiClient {
         systemMessage.addProperty("content", "You are a problem generator for a competitive programming platform. "
                 + "When given a brief problem description (e.g., 'A problem to double an integer'), "
                 + "generate a complete problem statement that includes the following sections:\n"
-                + "# Problem Name \n"
-                + "# Input Constraints \n"
-                + "# Input Format\n"
-                + "# Output Format\n"
-                + "# Sample Input and Sample Output\n"
-                + "# Test Cases\n"
+                + "1) Problem Name \n"
+                + "2) Input Constraints \n"
+                + "3) Input Format\n"
+                + "4) Output Format\n"
+                + "5) Sample Input and Sample Output\n"
+                + "6) Test Cases\n"
                 + "Always use these headings exactly as written. If you do not understand what is being asked, explicitly say so.");
         messages.add(systemMessage);
 
@@ -98,12 +98,12 @@ public class OpenApiClient {
      */
     private JsonObject parseResponse(String reply) {
         JsonObject result = new JsonObject();
-        String problemNameStart = "# Problem Name";
-        String inputConstraintsStart = "# Input Constraints";
-        String inputFormatStart = "# Input Format";
-        String outputFormatStart = "# Output Format";
-        String sampleIOStart = "# Sample Input and Sample Output";
-        String testCasesStart = "# Test Cases";
+        String problemNameStart = "1) Problem Name";
+        String inputConstraintsStart = "2) Input Constraints";
+        String inputFormatStart = "3) Input Format";
+        String outputFormatStart = "4) Output Format";
+        String sampleIOStart = "5) Sample Input and Sample Output";
+        String testCasesStart = "6) Test Cases";
 
         String problemName = extractSection(reply, problemNameStart, inputConstraintsStart);
         String inputConstraints = extractSection(reply, inputConstraintsStart, inputFormatStart);
