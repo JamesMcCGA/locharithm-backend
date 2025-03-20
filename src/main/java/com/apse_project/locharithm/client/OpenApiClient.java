@@ -16,7 +16,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class OpenApiClient {
 
-    private static final String API_KEY = "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";
+    private static final String API_KEY = "YOUR_API_KEY";
     private static final String API_URL = "https://api.openai.com/v1/chat/completions";
 
     private final HttpClient httpClient;
@@ -35,62 +35,60 @@ public class OpenApiClient {
 
         JsonObject systemMessage = new JsonObject();
         systemMessage.addProperty("role", "system");
-        systemMessage.addProperty(
-                "content",
+        systemMessage.addProperty("content",
                 "You are a problem generator for a competitive programming platform. "
-                        + "You must respond using ONLY plain text, and produce EXACTLY these sections:\\n\\n"
-                        + "1) Problem Name\\n"
-                        + "2) Input Constraints\\n"
-                        + "3) Input Format\\n"
-                        + "4) Output Format\\n"
-                        + "5) Sample Input and Sample Output\\n"
-                        + "6) Test Cases\\n\\n"
-                        + "When providing sample inputs/outputs (heading 5) and test cases (heading 6), you must use this format:\\n"
-                        + "Sample Input 1:\\n"
-                        + "(multi-line if needed)\\n"
-                        + "<<<END>>>\\n"
-                        + "Sample Output 1:\\n"
-                        + "(multi-line if needed)\\n"
-                        + "<<<END>>>\\n\\n"
-                        + "Sample Input 2:\\n"
-                        + "(multi-line if needed)\\n"
-                        + "<<<END>>>\\n"
-                        + "Sample Output 2:\\n"
-                        + "(multi-line if needed)\\n"
-                        + "<<<END>>>\\n\\n"
-                        + "Under '6) Test Cases', you must produce up to five test case inputs and outputs, labeled exactly:\\n"
-                        + "Test Case Input 1:\\n"
-                        + "(multi-line if needed)\\n"
-                        + "<<<END>>>\\n"
-                        + "Test Case Output 1:\\n"
-                        + "(multi-line if needed)\\n"
-                        + "<<<END>>>\\n\\n"
-                        + "Test Case Input 2:\\n"
-                        + "(multi-line)\\n"
-                        + "<<<END>>>\\n"
-                        + "Test Case Output 2:\\n"
-                        + "(multi-line)\\n"
-                        + "<<<END>>>\\n\\n"
-                        + "Test Case Input 3:\\n"
-                        + "(multi-line)\\n"
-                        + "<<<END>>>\\n"
-                        + "Test Case Output 3:\\n"
-                        + "(multi-line)\\n"
-                        + "<<<END>>>\\n\\n"
-                        + "Test Case Input 4:\\n"
-                        + "(multi-line)\\n"
-                        + "<<<END>>>\\n"
-                        + "Test Case Output 4:\\n"
-                        + "(multi-line)\\n"
-                        + "<<<END>>>\\n\\n"
-                        + "Test Case Input 5:\\n"
-                        + "(multi-line)\\n"
-                        + "<<<END>>>\\n"
-                        + "Test Case Output 5:\\n"
-                        + "(multi-line)\\n"
-                        + "<<<END>>>\\n\\n"
+                        + "You must respond using ONLY plain text, and produce EXACTLY these sections:\n\n"
+                        + "1) Problem Name\n"
+                        + "2) Input Constraints\n"
+                        + "3) Input Format\n"
+                        + "4) Output Format\n"
+                        + "5) Sample Input and Sample Output\n"
+                        + "6) Test Cases\n\n"
+                        + "When providing sample inputs/outputs (heading 5) and test cases (heading 6), you must use this format:\n"
+                        + "Sample Input 1:\n"
+                        + "(multi-line if needed)\n"
+                        + "<<<END>>>\n"
+                        + "Sample Output 1:\n"
+                        + "(multi-line if needed)\n"
+                        + "<<<END>>>\n\n"
+                        + "Sample Input 2:\n"
+                        + "(multi-line if needed)\n"
+                        + "<<<END>>>\n"
+                        + "Sample Output 2:\n"
+                        + "(multi-line if needed)\n"
+                        + "<<<END>>>\n\n"
+                        + "Under '6) Test Cases', you must produce up to five test case inputs and outputs, labeled exactly:\n"
+                        + "Test Case Input 1:\n"
+                        + "(multi-line if needed)\n"
+                        + "<<<END>>>\n"
+                        + "Test Case Output 1:\n"
+                        + "(multi-line if needed)\n"
+                        + "<<<END>>>\n\n"
+                        + "Test Case Input 2:\n"
+                        + "(multi-line)\n"
+                        + "<<<END>>>\n"
+                        + "Test Case Output 2:\n"
+                        + "(multi-line)\n"
+                        + "<<<END>>>\n\n"
+                        + "Test Case Input 3:\n"
+                        + "(multi-line)\n"
+                        + "<<<END>>>\n"
+                        + "Test Case Output 3:\n"
+                        + "(multi-line)\n"
+                        + "<<<END>>>\n\n"
+                        + "Test Case Input 4:\n"
+                        + "(multi-line)\n"
+                        + "<<<END>>>\n"
+                        + "Test Case Output 4:\n"
+                        + "(multi-line)\n"
+                        + "<<<END>>>\n\n"
+                        + "Test Case Input 5:\n"
+                        + "(multi-line)\n"
+                        + "<<<END>>>\n"
+                        + "Test Case Output 5:\n"
+                        + "(multi-line)\n"
+                        + "<<<END>>>\n\n"
                         + "Do NOT skip or rename these sections and labels. If you do not understand, explicitly say so."
-                        + "ENSURE that you NEVER use just \n but always \\n"
         );
         messages.add(systemMessage);
 
@@ -136,29 +134,42 @@ public class OpenApiClient {
         String sampleIO = extractSection(reply, "5) Sample Input and Sample Output", "6) Test Cases");
         String testCases = extractSection(reply, "6) Test Cases", null);
 
-        result.addProperty("problemName", problemName);
-        result.addProperty("inputConstraints", inputConstraints);
-        result.addProperty("inputFormat", inputFormat);
-        result.addProperty("outputFormat", outputFormat);
+        result.addProperty("problemName", sanitizeForJson(problemName));
+        result.addProperty("inputConstraints", sanitizeForJson(inputConstraints));
+        result.addProperty("inputFormat", sanitizeForJson(inputFormat));
+        result.addProperty("outputFormat", sanitizeForJson(outputFormat));
 
         String sampleInput1 = extractBlock(sampleIO, "Sample Input 1:");
         String sampleOutput1 = extractBlock(sampleIO, "Sample Output 1:");
         String sampleInput2 = extractBlock(sampleIO, "Sample Input 2:");
         String sampleOutput2 = extractBlock(sampleIO, "Sample Output 2:");
 
-        result.addProperty("sampleInput1", sampleInput1);
-        result.addProperty("sampleOutput1", sampleOutput1);
-        result.addProperty("sampleInput2", sampleInput2);
-        result.addProperty("sampleOutput2", sampleOutput2);
+        result.addProperty("sampleInput1", sanitizeForJson(sampleInput1));
+        result.addProperty("sampleOutput1", sanitizeForJson(sampleOutput1));
+        result.addProperty("sampleInput2", sanitizeForJson(sampleInput2));
+        result.addProperty("sampleOutput2", sanitizeForJson(sampleOutput2));
+
 
         for (int i = 1; i <= 5; i++) {
             String tcIn = extractBlock(testCases, "Test Case Input " + i + ":");
             String tcOut = extractBlock(testCases, "Test Case Output " + i + ":");
-            result.addProperty("testCaseInput" + i, tcIn);
-            result.addProperty("testCaseOutput" + i, tcOut);
+            result.addProperty("testCaseInput" + i, sanitizeForJson(tcIn));
+            result.addProperty("testCaseOutput" + i, sanitizeForJson(tcOut));
         }
 
         return result;
+    }
+
+    /**
+     * Replaces all actual newline characters with the literal "\n" so the resulting JSON
+     * will contain double-escaped newlines. Also removes carriage returns if present.
+     */
+    private String sanitizeForJson(String text) {
+        if (text == null) return "";
+        return text
+                .replace("\r\n", "\n")
+                .replace("\r", "")
+                .replace("\n", "\\n");
     }
 
     private String extractSection(String text, String startMarker, String endMarker) {
@@ -171,7 +182,7 @@ public class OpenApiClient {
     }
 
     /**
-     * Extracts multi-line text between label and the '<<<END>>>' marker.
+     * Extracts multi-line text from label up to the first occurrence of '<<<END>>>'.
      */
     private String extractBlock(String fullText, String label) {
         int startIndex = fullText.indexOf(label);
@@ -190,7 +201,7 @@ public class OpenApiClient {
     public static void main(String[] args) {
         OpenApiClient client = new OpenApiClient();
         try {
-            String prompt = "A problem about reading multiple lines and counting vowels.";
+            String prompt = "You get 2 strings, output the longer one of the two. If they are the same length, output either.";
             ResponseEntity<String> apiResponse = client.sendChatMessage(prompt);
 
             if (apiResponse.getStatusCode().is2xxSuccessful()) {
