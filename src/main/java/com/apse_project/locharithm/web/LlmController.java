@@ -3,7 +3,6 @@ package com.apse_project.locharithm.web;
 import com.apse_project.locharithm.client.OpenApiClient;
 import com.apse_project.locharithm.dtos.LlmRequestDto;
 import com.apse_project.locharithm.service.Judge0ApiService;
-import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -28,23 +27,17 @@ public class LlmController {
     }
 
     @PostMapping("/queryLlm")
-    public ResponseEntity<JsonArray> requestAi(@RequestBody LlmRequestDto llmRequestDto) {
+    public ResponseEntity<String> requestAi(@RequestBody LlmRequestDto llmRequestDto) {
         try {
             String query = llmRequestDto.getPrompt();
             ResponseEntity<String> apiResponse = openApiClient.sendChatMessage(query);
             String reply = apiResponse.getBody();
             JsonObject parsedResponse = openApiClient.parseResponse(reply);
-
-            // Wrap the JSON object inside an array
-            JsonArray array = new JsonArray();
-            array.add(parsedResponse);
-
-            return ResponseEntity.ok(array);
+            return ResponseEntity.ok(parsedResponse.toString());
         } catch (IOException | InterruptedException e) {
             return ResponseEntity
                     .status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(null);
         }
     }
-
 }
