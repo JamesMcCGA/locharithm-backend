@@ -16,7 +16,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class OpenApiClient {
 
-    private static final String API_KEY = "YOUR_API_KEY";
+    private static final String API_KEY = "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";
     private static final String API_URL = "https://api.openai.com/v1/chat/completions";
 
     private final HttpClient httpClient;
