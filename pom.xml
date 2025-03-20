@@ -63,11 +63,6 @@
 			<artifactId>hibernate-community-dialects</artifactId>
 			<version>6.2.3.Final</version>
 		</dependency>
-		<dependency>
-			<groupId>org.liquibase</groupId>
-			<artifactId>liquibase-core</artifactId>
-		</dependency>
-
 	</dependencies>
 
 	<build>
