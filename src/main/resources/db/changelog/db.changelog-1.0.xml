@@ -42,7 +42,7 @@
 
     <changeSet id="3" author="devennyr">
         <createTable tableName="test_cases">
-            <column name="test_case_id" type="INTEGER">
+            <column name="test_case_id" type="INTEGER" autoIncrement="true">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
             <column name="problem_id" type="INTEGER">

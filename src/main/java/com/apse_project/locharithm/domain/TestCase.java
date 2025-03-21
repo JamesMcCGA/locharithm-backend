@@ -11,15 +11,8 @@ import lombok.Setter;
 public class TestCase {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.TABLE, generator = "testcase_gen")
-    @TableGenerator(name = "testcase_gen", 
-                   table = "id_generator", 
-                   pkColumnName = "gen_name", 
-                   valueColumnName = "gen_value",
-                   pkColumnValue = "testcase_id",
-                   initialValue = 1,
-                   allocationSize = 1)
-    @Column(name = "test_case_id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "test_case_id", columnDefinition = "INTEGER PRIMARY KEY AUTOINCREMENT")
     private Integer id;
 
     @ManyToOne

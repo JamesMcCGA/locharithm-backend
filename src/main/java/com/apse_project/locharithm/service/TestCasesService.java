@@ -6,6 +6,7 @@ import com.apse_project.locharithm.domain.TestCase;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -39,10 +40,11 @@ public class TestCasesService {
         return testCaseDao.findByProblem_ProblemId(problemId);
     }
 
-    @Transactional
+    @Transactional(propagation = Propagation.MANDATORY)
     public TestCase saveTestCase(int problemId, TestCase testCase) {
         logger.debug("Saving test case for problem id: {}", problemId);
         try {
+            testCase.setId(null); // Ensure ID is null to let JPA generate it
             TestCase savedTestCase = testCaseDao.save(testCase);
             logger.debug("Successfully saved test case with id: {}", savedTestCase.getId());
             return savedTestCase;
