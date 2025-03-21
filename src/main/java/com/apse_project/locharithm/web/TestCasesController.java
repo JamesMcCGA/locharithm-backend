@@ -36,8 +36,8 @@ public class TestCasesController {
     }
 
     @PostMapping
-    public TestCase createTestCase(@RequestBody TestCase testCase) {
-        return testCasesService.saveTestCase(testCase);
+    public TestCase createTestCase(@RequestBody int pId, TestCase testCase) {
+        return testCasesService.saveTestCase(pId, testCase);
     }
 
     @DeleteMapping("/{id}")
