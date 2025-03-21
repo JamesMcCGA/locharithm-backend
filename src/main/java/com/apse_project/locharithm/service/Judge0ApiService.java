@@ -13,7 +13,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
-import java.util.ArrayList;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -42,27 +41,15 @@ public class Judge0ApiService {
                         TestCase::getId,
                         testCase -> {
                             try {
-                                // Aggregate the test case inputs
-                                String aggregatedInput = Stream.of(
-                                                testCase.getTestCaseInput1(),
-                                                testCase.getTestCaseInput2(),
-                                                testCase.getTestCaseInput3(),
-                                                testCase.getTestCaseInput4(),
-                                                testCase.getTestCaseInput5()
-                                        )
-                                        .filter(s -> s != null && !s.trim().isEmpty())
+                                // Split the input field by newline, trim each line, then re-aggregate.
+                                String aggregatedInput = Stream.of(testCase.getTestCaseInput().split("\\r?\\n"))
+                                        .filter(line -> line != null && !line.trim().isEmpty())
                                         .map(String::trim)
                                         .collect(Collectors.joining("\n")) + "\n";
 
-                                // Aggregate the test case outputs
-                                String aggregatedOutput = Stream.of(
-                                                testCase.getTestCaseOutput1(),
-                                                testCase.getTestCaseOutput2(),
-                                                testCase.getTestCaseOutput3(),
-                                                testCase.getTestCaseOutput4(),
-                                                testCase.getTestCaseOutput5()
-                                        )
-                                        .filter(s -> s != null && !s.trim().isEmpty())
+                                // Similarly split the output field by newline and re-aggregate.
+                                String aggregatedOutput = Stream.of(testCase.getTestCaseOutput().split("\\r?\\n"))
+                                        .filter(line -> line != null && !line.trim().isEmpty())
                                         .map(String::trim)
                                         .collect(Collectors.joining("\n")) + "\n";
 
@@ -87,7 +74,6 @@ public class Judge0ApiService {
                                     return "Error: Submission Failed";
                                 }
                             } catch (Exception e) {
-                                // TODO: Consider more thorough error handling.
                                 return "Error: " + e.getMessage();
                             }
                         }
