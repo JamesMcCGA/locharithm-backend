@@ -16,8 +16,8 @@ import org.springframework.stereotype.Component;
 @Component
 public class OpenApiClient {
 
-    private static final String API_KEY = "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";
-    private static final String API_URL = "https://api.deepseek.com/v1";
+    private static final String API_KEY = "sk-6601348066e24716b75f039e8aece0b2";
+    private static final String API_URL = "https://api.deepseek.com/v1/chat/completions";
 
     private final HttpClient httpClient;
     private final Gson gson;
@@ -29,82 +29,85 @@ public class OpenApiClient {
 
     public ResponseEntity<String> sendChatMessage(String prompt) throws IOException, InterruptedException {
         JsonObject requestBody = new JsonObject();
-        requestBody.addProperty("model", "gpt-4");
-
+        requestBody.addProperty("model", "deepseek-chat");
+        
         JsonArray messages = new JsonArray();
-
+        
         JsonObject systemMessage = new JsonObject();
         systemMessage.addProperty("role", "system");
         systemMessage.addProperty("content",
-                "You are a problem generator for a competitive programming platform. "
-                        + "You must respond using ONLY plain text, and produce EXACTLY these sections:\n\n"
-                        + "1) Problem Name\n"
-                        + "2) Input Constraints\n"
-                        + "3) Input Format\n"
-                        + "4) Output Format\n"
-                        + "5) Sample Input and Sample Output\n"
-                        + "6) Test Cases\n\n"
-                        + "When providing sample inputs/outputs (heading 5) and test cases (heading 6), you must use this format:\n"
-                        + "Sample Input 1:\n"
-                        + "(multi-line if needed)\n"
-                        + "<<<END>>>\n"
-                        + "Sample Output 1:\n"
-                        + "(multi-line if needed)\n"
-                        + "<<<END>>>\n\n"
-                        + "Sample Input 2:\n"
-                        + "(multi-line if needed)\n"
-                        + "<<<END>>>\n"
-                        + "Sample Output 2:\n"
-                        + "(multi-line if needed)\n"
-                        + "<<<END>>>\n\n"
-                        + "Under '6) Test Cases', you must produce up to five test case inputs and outputs, labeled exactly:\n"
-                        + "Test Case Input 1:\n"
-                        + "(multi-line if needed)\n"
-                        + "<<<END>>>\n"
-                        + "Test Case Output 1:\n"
-                        + "(multi-line if needed)\n"
-                        + "<<<END>>>\n\n"
-                        + "Test Case Input 2:\n"
-                        + "(multi-line)\n"
-                        + "<<<END>>>\n"
-                        + "Test Case Output 2:\n"
-                        + "(multi-line)\n"
-                        + "<<<END>>>\n\n"
-                        + "Test Case Input 3:\n"
-                        + "(multi-line)\n"
-                        + "<<<END>>>\n"
-                        + "Test Case Output 3:\n"
-                        + "(multi-line)\n"
-                        + "<<<END>>>\n\n"
-                        + "Test Case Input 4:\n"
-                        + "(multi-line)\n"
-                        + "<<<END>>>\n"
-                        + "Test Case Output 4:\n"
-                        + "(multi-line)\n"
-                        + "<<<END>>>\n\n"
-                        + "Test Case Input 5:\n"
-                        + "(multi-line)\n"
-                        + "<<<END>>>\n"
-                        + "Test Case Output 5:\n"
-                        + "(multi-line)\n"
-                        + "<<<END>>>\n\n"
-                        + "Do NOT skip or rename these sections and labels. If you do not understand, explicitly say so."
+        "You are a problem generator for a competitive programming platform. "
+        + "You must respond using ONLY plain text, and produce EXACTLY these sections:\n\n"
+        + "1) Problem Name\n"
+        + "2) Input Constraints\n"
+        + "3) Input Format\n"
+        + "4) Output Format\n"
+        + "5) Sample Input and Sample Output\n"
+        + "6) Test Cases\n\n"
+        + "When providing sample inputs/outputs (heading 5) and test cases (heading 6), you must use this format:\n"
+        + "Sample Input 1:\n"
+        + "(multi-line if needed)\n"
+        + "<<<END>>>\n"
+        + "Sample Output 1:\n"
+        + "(multi-line if needed)\n"
+        + "<<<END>>>\n\n"
+        + "Sample Input 2:\n"
+        + "(multi-line if needed)\n"
+        + "<<<END>>>\n"
+        + "Sample Output 2:\n"
+        + "(multi-line if needed)\n"
+        + "<<<END>>>\n\n"
+        + "Under '6) Test Cases', you must produce up to five test case inputs and outputs, labeled exactly:\n"
+        + "Test Case Input 1:\n"
+        + "(multi-line if needed)\n"
+        + "<<<END>>>\n"
+        + "Test Case Output 1:\n"
+        + "(multi-line if needed)\n"
+        + "<<<END>>>\n\n"
+        + "Test Case Input 2:\n"
+        + "(multi-line)\n"
+        + "<<<END>>>\n"
+        + "Test Case Output 2:\n"
+        + "(multi-line)\n"
+        + "<<<END>>>\n\n"
+        + "Test Case Input 3:\n"
+        + "(multi-line)\n"
+        + "<<<END>>>\n"
+        + "Test Case Output 3:\n"
+        + "(multi-line)\n"
+        + "<<<END>>>\n\n"
+        + "Test Case Input 4:\n"
+        + "(multi-line)\n"
+        + "<<<END>>>\n"
+        + "Test Case Output 4:\n"
+        + "(multi-line)\n"
+        + "<<<END>>>\n\n"
+        + "Test Case Input 5:\n"
+        + "(multi-line)\n"
+        + "<<<END>>>\n"
+        + "Test Case Output 5:\n"
+        + "(multi-line)\n"
+        + "<<<END>>>\n\n"
+        + "Do NOT skip or rename these sections and labels. If you do not understand, explicitly say so."
         );
         messages.add(systemMessage);
-
+        
         JsonObject userMessage = new JsonObject();
         userMessage.addProperty("role", "user");
         userMessage.addProperty("content", prompt);
         messages.add(userMessage);
-
+        
         requestBody.add("messages", messages);
-
+        
+        requestBody.addProperty("stream", false);
         HttpRequest httpRequest = HttpRequest.newBuilder()
-                .uri(URI.create(API_URL))
+        .uri(URI.create(API_URL))
                 .header("Content-Type", "application/json")
                 .header("Authorization", "Bearer " + API_KEY)
                 .POST(HttpRequest.BodyPublishers.ofString(gson.toJson(requestBody)))
                 .build();
+
+        System.out.println("Request body: " + gson.toJson(requestBody));
 
         HttpResponse<String> response = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString());
         if (response.statusCode() == 200) {
@@ -126,7 +129,7 @@ public class OpenApiClient {
 
     public JsonObject parseResponse(String reply) {
         JsonObject result = new JsonObject();
-
+        result.addProperty("reply", reply);
         String problemName = extractSection(reply, "1) Problem Name", "2) Input Constraints");
         String inputConstraints = extractSection(reply, "2) Input Constraints", "3) Input Format");
         String inputFormat = extractSection(reply, "3) Input Format", "4) Output Format");

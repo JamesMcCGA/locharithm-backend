@@ -30,11 +30,14 @@ public class LlmController {
     public ResponseEntity<String> requestAi(@RequestBody LlmRequestDto llmRequestDto) {
         try {
             String query = llmRequestDto.getPrompt();
+            // System.out.println(query);
             ResponseEntity<String> apiResponse = openApiClient.sendChatMessage(query);
             String reply = apiResponse.getBody();
             JsonObject parsedResponse = openApiClient.parseResponse(reply);
+            System.out.println(parsedResponse.toString());
             return ResponseEntity.ok(parsedResponse.toString());
         } catch (IOException | InterruptedException e) {
+            e.printStackTrace();
             return ResponseEntity
                     .status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(null);
