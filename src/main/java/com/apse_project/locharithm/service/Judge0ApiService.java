@@ -13,7 +13,9 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
+import java.util.ArrayList;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 public class Judge0ApiService {
@@ -40,13 +42,34 @@ public class Judge0ApiService {
                         TestCase::getId,
                         testCase -> {
                             try {
-                                String stdinFormatted = testCase.getTestCaseInput().trim() + "\n";
-                                String expectedOutputFormatted = testCase.getTestCaseOutput().trim() + "\n";
+                                // Aggregate the test case inputs
+                                String aggregatedInput = Stream.of(
+                                                testCase.getTestCaseInput1(),
+                                                testCase.getTestCaseInput2(),
+                                                testCase.getTestCaseInput3(),
+                                                testCase.getTestCaseInput4(),
+                                                testCase.getTestCaseInput5()
+                                        )
+                                        .filter(s -> s != null && !s.trim().isEmpty())
+                                        .map(String::trim)
+                                        .collect(Collectors.joining("\n")) + "\n";
+
+                                // Aggregate the test case outputs
+                                String aggregatedOutput = Stream.of(
+                                                testCase.getTestCaseOutput1(),
+                                                testCase.getTestCaseOutput2(),
+                                                testCase.getTestCaseOutput3(),
+                                                testCase.getTestCaseOutput4(),
+                                                testCase.getTestCaseOutput5()
+                                        )
+                                        .filter(s -> s != null && !s.trim().isEmpty())
+                                        .map(String::trim)
+                                        .collect(Collectors.joining("\n")) + "\n";
 
                                 SubmissionRequest request = judge0ApiClient.createHttpSubmissionRequestFromCode(
                                         plainCode,
-                                        stdinFormatted,
-                                        expectedOutputFormatted,
+                                        aggregatedInput,
+                                        aggregatedOutput,
                                         languageCode
                                 );
 
@@ -64,7 +87,7 @@ public class Judge0ApiService {
                                     return "Error: Submission Failed";
                                 }
                             } catch (Exception e) {
-                                // TODO we should probably have more thorough error handling than this catch-all.
+                                // TODO: Consider more thorough error handling.
                                 return "Error: " + e.getMessage();
                             }
                         }
@@ -81,5 +104,4 @@ public class Judge0ApiService {
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(jsonResults);
     }
-
 }
