@@ -72,19 +72,19 @@ public class ProblemService {
             logger.debug("Problem saved successfully with ID: {}", problemId);
 
             logger.debug("Creating test cases");
-            TestCase testCase1 = createTestCase(savedProblem, fullProblemDto.getTestCaseInput1(), fullProblemDto.getTestCaseOutput1());
+            TestCase testCase1 = createTestCase(savedProblem, fullProblemDto.getTestCaseInput1(), fullProblemDto.getTestCaseOutput1(), 1);
             testCasesService.saveTestCase(problemId, testCase1);
 
-            TestCase testCase2 = createTestCase(savedProblem, fullProblemDto.getTestCaseInput2(), fullProblemDto.getTestCaseOutput2());
+            TestCase testCase2 = createTestCase(savedProblem, fullProblemDto.getTestCaseInput2(), fullProblemDto.getTestCaseOutput2(), 2);
             testCasesService.saveTestCase(problemId, testCase2);
 
-            TestCase testCase3 = createTestCase(savedProblem, fullProblemDto.getTestCaseInput3(), fullProblemDto.getTestCaseOutput3());
+            TestCase testCase3 = createTestCase(savedProblem, fullProblemDto.getTestCaseInput3(), fullProblemDto.getTestCaseOutput3(), 3);
             testCasesService.saveTestCase(problemId, testCase3);
 
-            TestCase testCase4 = createTestCase(savedProblem, fullProblemDto.getTestCaseInput4(), fullProblemDto.getTestCaseOutput4());
+            TestCase testCase4 = createTestCase(savedProblem, fullProblemDto.getTestCaseInput4(), fullProblemDto.getTestCaseOutput4(), 4);
             testCasesService.saveTestCase(problemId, testCase4);
 
-            TestCase testCase5 = createTestCase(savedProblem, fullProblemDto.getTestCaseInput5(), fullProblemDto.getTestCaseOutput5());
+            TestCase testCase5 = createTestCase(savedProblem, fullProblemDto.getTestCaseInput5(), fullProblemDto.getTestCaseOutput5(), 5);
             testCasesService.saveTestCase(problemId, testCase5);
 
         } catch (Exception e) {
@@ -93,11 +93,35 @@ public class ProblemService {
         }
     }
 
-    private TestCase createTestCase(Problem problem, String input, String output) {
+    private TestCase createTestCase(Problem problem, String input, String output, int testCaseNumber) {
         TestCase testCase = new TestCase();
         testCase.setProblem(problem);
-        testCase.setTestCaseInput(input);
-        testCase.setTestCaseOutput(output);
+
+        switch(testCaseNumber) {
+            case 1:
+                testCase.setTestCaseInput1(input);
+                testCase.setTestCaseOutput1(output);
+                break;
+            case 2:
+                testCase.setTestCaseInput2(input);
+                testCase.setTestCaseOutput2(output);
+                break;
+            case 3:
+                testCase.setTestCaseInput3(input);
+                testCase.setTestCaseOutput3(output);
+                break;
+            case 4:
+                testCase.setTestCaseInput4(input);
+                testCase.setTestCaseOutput4(output);
+                break;
+            case 5:
+                testCase.setTestCaseInput5(input);
+                testCase.setTestCaseOutput5(output);
+                break;
+            default:
+                break;
+        }
+
         return testCase;
     }
 }
