@@ -54,16 +54,6 @@ public class ProblemService {
                     .sampleOutput1(fullProblemDto.getSampleOutput1())
                     .sampleInput2(fullProblemDto.getSampleInput2())
                     .sampleOutput2(fullProblemDto.getSampleOutput2())
-                    .testCaseInput1(fullProblemDto.getTestCaseInput1())
-                    .testCaseOutput1(fullProblemDto.getTestCaseOutput1())
-                    .testCaseInput2(fullProblemDto.getTestCaseInput2())
-                    .testCaseOutput2(fullProblemDto.getTestCaseOutput2())
-                    .testCaseInput3(fullProblemDto.getTestCaseInput3())
-                    .testCaseOutput3(fullProblemDto.getTestCaseOutput3())
-                    .testCaseInput4(fullProblemDto.getTestCaseInput4())
-                    .testCaseOutput4(fullProblemDto.getTestCaseOutput4())
-                    .testCaseInput5(fullProblemDto.getTestCaseInput5())
-                    .testCaseOutput5(fullProblemDto.getTestCaseOutput5())
                     .build();
                     
             logger.debug("Saving problem to database");
@@ -96,31 +86,9 @@ public class ProblemService {
     private TestCase createTestCase(Problem problem, String input, String output, int testCaseNumber) {
         TestCase testCase = new TestCase();
         testCase.setProblem(problem);
-
-        switch(testCaseNumber) {
-            case 1:
-                testCase.setTestCaseInput1(input);
-                testCase.setTestCaseOutput1(output);
-                break;
-            case 2:
-                testCase.setTestCaseInput2(input);
-                testCase.setTestCaseOutput2(output);
-                break;
-            case 3:
-                testCase.setTestCaseInput3(input);
-                testCase.setTestCaseOutput3(output);
-                break;
-            case 4:
-                testCase.setTestCaseInput4(input);
-                testCase.setTestCaseOutput4(output);
-                break;
-            case 5:
-                testCase.setTestCaseInput5(input);
-                testCase.setTestCaseOutput5(output);
-                break;
-            default:
-                break;
-        }
+        testCase.setTestCaseInput(input);
+        testCase.setTestCaseOutput(output);
+        testCase.setTestCaseNumber(testCaseNumber);
 
         return testCase;
     }

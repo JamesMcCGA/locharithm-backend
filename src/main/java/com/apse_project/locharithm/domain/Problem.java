@@ -54,34 +54,4 @@ public class Problem {
 
     @Column(name="sample_output2")
     private String sampleOutput2;
-
-    @Column(name="test_case_input1")
-    private String testCaseInput1;
-
-    @Column(name="test_case_output1")
-    private String testCaseOutput1;
-
-    @Column(name="test_case_input2")
-    private String testCaseInput2;
-
-    @Column(name="test_case_output2")
-    private String testCaseOutput2;
-
-    @Column(name="test_case_input3")
-    private String testCaseInput3;
-
-    @Column(name="test_case_output3")
-    private String testCaseOutput3;
-
-    @Column(name="test_case_input4")
-    private String testCaseInput4;
-
-    @Column(name="test_case_output4")
-    private String testCaseOutput4;
-
-    @Column(name="test_case_input5")
-    private String testCaseInput5;
-
-    @Column(name="test_case_output5")
-    private String testCaseOutput5;
 }

@@ -12,10 +12,10 @@ public class TestCase {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "test_case_id", columnDefinition = "INTEGER PRIMARY KEY AUTOINCREMENT")
+    @Column(name = "test_case_id")
     private Integer id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "problem_id", nullable = false)
     private Problem problem;
 
@@ -24,4 +24,8 @@ public class TestCase {
 
     @Column(name = "test_case_output", nullable = false)
     private String testCaseOutput;
+
+    @Column(name = "test_case_number", nullable = false)
+    private Integer testCaseNumber;
 }
+

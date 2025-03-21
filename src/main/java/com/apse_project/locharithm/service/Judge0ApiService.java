@@ -35,28 +35,19 @@ public class Judge0ApiService {
      */
     public ResponseEntity<String> submitCode(String plainCode, int problemId, int languageCode) {
         List<TestCase> testCases = testCasesService.getTestCasesByProblemId(problemId);
-
         Map<Integer, String> testResults = testCases.parallelStream()
                 .collect(Collectors.toConcurrentMap(
-                        TestCase::getId,
+                        TestCase::getTestCaseNumber,
                         testCase -> {
                             try {
-                                // Split the input field by newline, trim each line, then re-aggregate.
-                                String aggregatedInput = Stream.of(testCase.getTestCaseInput().split("\\r?\\n"))
-                                        .filter(line -> line != null && !line.trim().isEmpty())
-                                        .map(String::trim)
-                                        .collect(Collectors.joining("\n")) + "\n";
+                                String input = testCase.getTestCaseInput();
+                                String output = testCase.getTestCaseOutput();
 
-                                // Similarly split the output field by newline and re-aggregate.
-                                String aggregatedOutput = Stream.of(testCase.getTestCaseOutput().split("\\r?\\n"))
-                                        .filter(line -> line != null && !line.trim().isEmpty())
-                                        .map(String::trim)
-                                        .collect(Collectors.joining("\n")) + "\n";
-
+                                // Create a submission request from the plain code and aggregated test data.
                                 SubmissionRequest request = judge0ApiClient.createHttpSubmissionRequestFromCode(
                                         plainCode,
-                                        aggregatedInput,
-                                        aggregatedOutput,
+                                        input,
+                                        output,
                                         languageCode
                                 );
 
