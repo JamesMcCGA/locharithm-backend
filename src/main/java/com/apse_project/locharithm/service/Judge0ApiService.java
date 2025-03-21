@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 public class Judge0ApiService {
@@ -34,19 +35,19 @@ public class Judge0ApiService {
      */
     public ResponseEntity<String> submitCode(String plainCode, int problemId, int languageCode) {
         List<TestCase> testCases = testCasesService.getTestCasesByProblemId(problemId);
-
         Map<Integer, String> testResults = testCases.parallelStream()
                 .collect(Collectors.toConcurrentMap(
-                        TestCase::getId,
+                        TestCase::getTestCaseNumber,
                         testCase -> {
                             try {
-                                String stdinFormatted = testCase.getTestCaseInput().trim() + "\n";
-                                String expectedOutputFormatted = testCase.getTestCaseOutput().trim() + "\n";
+                                String input = testCase.getTestCaseInput();
+                                String output = testCase.getTestCaseOutput();
 
+                                // Create a submission request from the plain code and aggregated test data.
                                 SubmissionRequest request = judge0ApiClient.createHttpSubmissionRequestFromCode(
                                         plainCode,
-                                        stdinFormatted,
-                                        expectedOutputFormatted,
+                                        input,
+                                        output,
                                         languageCode
                                 );
 
@@ -64,7 +65,6 @@ public class Judge0ApiService {
                                     return "Error: Submission Failed";
                                 }
                             } catch (Exception e) {
-                                // TODO we should probably have more thorough error handling than this catch-all.
                                 return "Error: " + e.getMessage();
                             }
                         }
@@ -81,5 +81,4 @@ public class Judge0ApiService {
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(jsonResults);
     }
-
 }

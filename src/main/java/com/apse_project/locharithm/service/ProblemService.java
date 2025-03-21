@@ -54,16 +54,6 @@ public class ProblemService {
                     .sampleOutput1(fullProblemDto.getSampleOutput1())
                     .sampleInput2(fullProblemDto.getSampleInput2())
                     .sampleOutput2(fullProblemDto.getSampleOutput2())
-                    .testCaseInput1(fullProblemDto.getTestCaseInput1())
-                    .testCaseOutput1(fullProblemDto.getTestCaseOutput1())
-                    .testCaseInput2(fullProblemDto.getTestCaseInput2())
-                    .testCaseOutput2(fullProblemDto.getTestCaseOutput2())
-                    .testCaseInput3(fullProblemDto.getTestCaseInput3())
-                    .testCaseOutput3(fullProblemDto.getTestCaseOutput3())
-                    .testCaseInput4(fullProblemDto.getTestCaseInput4())
-                    .testCaseOutput4(fullProblemDto.getTestCaseOutput4())
-                    .testCaseInput5(fullProblemDto.getTestCaseInput5())
-                    .testCaseOutput5(fullProblemDto.getTestCaseOutput5())
                     .build();
                     
             logger.debug("Saving problem to database");
@@ -72,19 +62,19 @@ public class ProblemService {
             logger.debug("Problem saved successfully with ID: {}", problemId);
 
             logger.debug("Creating test cases");
-            TestCase testCase1 = createTestCase(savedProblem, fullProblemDto.getTestCaseInput1(), fullProblemDto.getTestCaseOutput1());
+            TestCase testCase1 = createTestCase(savedProblem, fullProblemDto.getTestCaseInput1(), fullProblemDto.getTestCaseOutput1(), 1);
             testCasesService.saveTestCase(problemId, testCase1);
 
-            TestCase testCase2 = createTestCase(savedProblem, fullProblemDto.getTestCaseInput2(), fullProblemDto.getTestCaseOutput2());
+            TestCase testCase2 = createTestCase(savedProblem, fullProblemDto.getTestCaseInput2(), fullProblemDto.getTestCaseOutput2(), 2);
             testCasesService.saveTestCase(problemId, testCase2);
 
-            TestCase testCase3 = createTestCase(savedProblem, fullProblemDto.getTestCaseInput3(), fullProblemDto.getTestCaseOutput3());
+            TestCase testCase3 = createTestCase(savedProblem, fullProblemDto.getTestCaseInput3(), fullProblemDto.getTestCaseOutput3(), 3);
             testCasesService.saveTestCase(problemId, testCase3);
 
-            TestCase testCase4 = createTestCase(savedProblem, fullProblemDto.getTestCaseInput4(), fullProblemDto.getTestCaseOutput4());
+            TestCase testCase4 = createTestCase(savedProblem, fullProblemDto.getTestCaseInput4(), fullProblemDto.getTestCaseOutput4(), 4);
             testCasesService.saveTestCase(problemId, testCase4);
 
-            TestCase testCase5 = createTestCase(savedProblem, fullProblemDto.getTestCaseInput5(), fullProblemDto.getTestCaseOutput5());
+            TestCase testCase5 = createTestCase(savedProblem, fullProblemDto.getTestCaseInput5(), fullProblemDto.getTestCaseOutput5(), 5);
             testCasesService.saveTestCase(problemId, testCase5);
 
         } catch (Exception e) {
@@ -93,11 +83,13 @@ public class ProblemService {
         }
     }
 
-    private TestCase createTestCase(Problem problem, String input, String output) {
+    private TestCase createTestCase(Problem problem, String input, String output, int testCaseNumber) {
         TestCase testCase = new TestCase();
         testCase.setProblem(problem);
         testCase.setTestCaseInput(input);
         testCase.setTestCaseOutput(output);
+        testCase.setTestCaseNumber(testCaseNumber);
+
         return testCase;
     }
 }
