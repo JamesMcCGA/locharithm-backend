@@ -8,6 +8,7 @@ is upon us: **the founding of Loch-arithm**.
 ---
 
 ## THE IDEA
+
 A platform for coding educators that allows you to create classes and host problems, competitive programming style. Includes class management views and for visibility on who is struggling on what.
 ---
 
