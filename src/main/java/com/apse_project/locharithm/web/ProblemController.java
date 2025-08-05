@@ -13,7 +13,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping(path="api/problems/")
-@RequiredArgsConstructor(onConstructor = @__(@Autowired))
+@RequiredArgsConstructor
 @CrossOrigin(origins="*")
 public class ProblemController {
 

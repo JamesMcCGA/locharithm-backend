@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog  xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="1" author="devennyr">
+        <createTable tableName="users">
+            <column name="id" type="INTEGER">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="name" type="TEXT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <loadData tableName="users" file="db/changelog/data/user.csv">
+            <column name="id" type="numeric"/>
+            <column name="name" type="string"/>
+        </loadData>
+    </changeSet>
+
+    <changeSet id="2" author="devennyr">
+        <createTable tableName="problem">
+            <column name="problem_id" type="INTEGER">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="name" type="TEXT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="description" type="TEXT"/>
+            <column name="sample_input" type="TEXT" />
+            <column name="sample_output" type="TEXT" />
+        </createTable>
+        <loadData tableName="problem" file="db/changelog/data/problem.csv">
+            <column name="problem_id" type="numeric"/>
+            <column name="name" type="string"/>
+            <column name="description" type="string"/>
+            <column name="sample_input" type="string"/>
+            <column name="sample_output" type="string"/>
+        </loadData>
+    </changeSet>
+
+    <changeSet id="3" author="devennyr">
+        <createTable tableName="test_cases">
+            <column name="test_case_id" type="INTEGER" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="problem_id" type="INTEGER">
+                <constraints foreignKeyName="fk_test_cases_problem"
+                             references="problem(problem_id)"
+                             nullable="false"/>
+            </column>
+            <column name="test_case_input" type="TEXT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="test_case_output" type="TEXT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <loadData tableName="test_cases" file="db/changelog/data/test_case.csv">
+            <column name="test_case_id" type="numeric"/>
+            <column name="problem_id" type="numeric"/>
+            <column name="test_case_input" type="string"/>
+            <column name="test_case_output" type="string"/>
+        </loadData>
+    </changeSet>
+
+</databaseChangeLog>

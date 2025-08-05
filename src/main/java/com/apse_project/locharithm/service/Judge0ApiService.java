@@ -43,7 +43,6 @@ public class Judge0ApiService {
                                 String input = testCase.getTestCaseInput();
                                 String output = testCase.getTestCaseOutput();
 
-                                // Create a submission request from the plain code and aggregated test data.
                                 SubmissionRequest request = judge0ApiClient.createHttpSubmissionRequestFromCode(
                                         plainCode,
                                         input,

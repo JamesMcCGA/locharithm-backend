@@ -19,9 +19,6 @@ public class PayloadController {
         String code = payload.getSource_code();
         int problemId = payload.getProblem_id();
         int languageCode = payload.getLanguage_id();
-        System.out.println(code);
-        System.out.println(problemId);
-        System.out.println(languageCode);
         return judge0ApiService.submitCode(code, problemId, languageCode);
     }
 }
