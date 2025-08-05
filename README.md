@@ -14,9 +14,9 @@ is upon us: **the founding of Loch-arithm**.
 ---
 
 ## Contributions
-# Current
+### Current
 James McCaffery - Lead Backend Engineer
 Ian Samir Yep Manazo - Lead Frontend Engineer
 
-# Former
+### Former
 Robert De Venny - MVP Contributions
