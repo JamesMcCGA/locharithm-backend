@@ -9,6 +9,7 @@ import java.net.http.HttpResponse;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
@@ -16,7 +17,8 @@ import org.springframework.stereotype.Component;
 @Component
 public class OpenApiClient {
 
-    private static final String API_KEY = "sk-6601348066e24716b75f039e8aece0b2";
+    @Value("${deepseek.api.key}")
+    private static String API_KEY;
     private static final String API_URL = "https://api.deepseek.com/v1/chat/completions";
 
     private final HttpClient httpClient;
