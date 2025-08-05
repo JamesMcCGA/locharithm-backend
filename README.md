@@ -13,12 +13,10 @@ is upon us: **the founding of Loch-arithm**.
 
 ---
 
-## GROUP MEMBERS AND ROLES
+## Contributions
+# Current
+James McCaffery - Lead Backend Engineer
+Ian Samir Yep Manazo - Lead Frontend Engineer
 
-| **Name**  | **Technical Skills**                                    | **Group Role**        |
-|-----------|---------------------------------------------------------|-----------------------|
-| James     | Back-end, Java, Documentation                           | Back-end, Scribe      |
-| Ian       | Competitive Programming, Angular, Java, C++             | Front-end             |
-| Chris     | Full-stack, C#                                          | Back-end              |
-| Robbie    | Full-stack Java, Angular                                | Back-end              |
-| Ibrahim   | Python, Angular                                         | Front-end             |
+# Former
+Robert De Venny - MVP Contributions
