@@ -8,9 +8,7 @@ is upon us: **the founding of Loch-arithm**.
 ---
 
 ## THE IDEA
-*LeetCode*-like programmatic problem solving software, serving as a semi-replacement for Moodle problem sets 
-(e.g., a substitute for PA coding problem sets).
-
+A platform for coding educators that allows you to create classes and host problems, competitive programming style. Includes class management views and for visibility on who is struggling on what.
 ---
 
 ## Contributions
