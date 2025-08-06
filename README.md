@@ -8,17 +8,14 @@ is upon us: **the founding of Loch-arithm**.
 ---
 
 ## THE IDEA
-*LeetCode*-like programmatic problem solving software, serving as a semi-replacement for Moodle problem sets 
-(e.g., a substitute for PA coding problem sets).
 
+A platform for coding educators that allows you to create classes and host problems, competitive programming style. Includes class management views and for visibility on who is struggling on what.
 ---
 
-## GROUP MEMBERS AND ROLES
+## Contributions
+### Current
+James McCaffery - Lead Backend Engineer <br>
+Ian Samir Yep Manazo - Lead Frontend Engineer
 
-| **Name**  | **Technical Skills**                                    | **Group Role**        |
-|-----------|---------------------------------------------------------|-----------------------|
-| James     | Back-end, Java, Documentation                           | Back-end, Scribe      |
-| Ian       | Competitive Programming, Angular, Java, C++             | Front-end             |
-| Chris     | Full-stack, C#                                          | Back-end              |
-| Robbie    | Full-stack Java, Angular                                | Back-end              |
-| Ibrahim   | Python, Angular                                         | Front-end             |
+### Former
+Robert De Venny - MVP Contributions
