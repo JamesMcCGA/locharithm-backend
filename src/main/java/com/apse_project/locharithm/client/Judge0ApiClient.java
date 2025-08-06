@@ -1,7 +1,7 @@
 package com.apse_project.locharithm.client;
 
 import com.apse_project.locharithm.dtos.SubmissionRequest;
-import com.apse_project.locharithm.responses.Judge0ResponseParser;
+import com.apse_project.locharithm.util.Judge0ResponseParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;

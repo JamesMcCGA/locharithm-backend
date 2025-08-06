@@ -3,7 +3,8 @@ package com.apse_project.locharithm.service;
 import com.apse_project.locharithm.client.Judge0ApiClient;
 import com.apse_project.locharithm.domain.TestCase;
 import com.apse_project.locharithm.dtos.SubmissionRequest;
-import com.apse_project.locharithm.responses.Judge0ResponseParser;
+import com.apse_project.locharithm.exception.CodeSubmissionException;
+import com.apse_project.locharithm.util.Judge0ResponseParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -14,7 +15,6 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Service
 public class Judge0ApiService {
@@ -33,7 +33,7 @@ public class Judge0ApiService {
     /**
      * Publicly accessible function to process a code submission end-to-end.
      */
-    public ResponseEntity<String> submitCode(String plainCode, int problemId, int languageCode) {
+    public ResponseEntity<String> submitCode(String plainCode, int problemId, int languageCode)  throws CodeSubmissionException {
         List<TestCase> testCases = testCasesService.getTestCasesByProblemId(problemId);
         Map<Integer, String> testResults = testCases.parallelStream()
                 .collect(Collectors.toConcurrentMap(
@@ -60,11 +60,11 @@ public class Judge0ApiService {
                                             "token"
                                     );
                                     return judge0ApiClient.getSubmissionResult(token);
-                                } else {
-                                    return "Error: Submission Failed";
                                 }
-                            } catch (Exception e) {
-                                return "Error: " + e.getMessage();
+
+                                throw new CodeSubmissionException(responseFromSubmissionEndpoint.getBody());
+                            } finally {
+                                System.out.println("completed test case processing");
                             }
                         }
                 ));
