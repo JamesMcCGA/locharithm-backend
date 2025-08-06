@@ -1,25 +1,35 @@
 package com.apse_project.locharithm.domain;
+import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-import lombok.*;
+import java.util.Set;
 
-@Getter
 @Entity
-@Table(name="users")
+@Getter
 @Setter
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
-@ToString
+@Table(name = "users")
 public class User {
 
     @Id
-    @Column(name="id")
-    private int id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer userId;
 
-    @Column(name="name")
-    private String name;
+    @Column(nullable = false, unique = true)
+    private String userEmail;
+
+    private String userName;
+
+    private String passwordHash;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private UserRole role;
+
+    @OneToMany(mappedBy = "instructor")
+    private Set<Course> coursesTaught;
+
+    @OneToMany(mappedBy = "student")
+    private Set<CourseParticipant> coursesParticipated;
+
 }
