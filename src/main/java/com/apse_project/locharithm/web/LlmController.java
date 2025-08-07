@@ -30,7 +30,6 @@ public class LlmController {
     public ResponseEntity<String> requestAi(@RequestBody LlmRequestDto llmRequestDto) {
         try {
             String query = llmRequestDto.getPrompt();
-            // System.out.println(query);
             ResponseEntity<String> apiResponse = openApiClient.sendChatMessage(query);
             String reply = apiResponse.getBody();
             JsonObject parsedResponse = openApiClient.parseResponse(reply);

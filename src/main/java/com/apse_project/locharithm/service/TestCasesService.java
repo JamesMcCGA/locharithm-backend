@@ -44,7 +44,7 @@ public class TestCasesService {
     public TestCase saveTestCase(int problemId, TestCase testCase) {
         logger.debug("Saving test case for problem id: {}", problemId);
         try {
-            testCase.setId(null); // Ensure ID is null to let JPA generate it
+            testCase.setId(null);
             TestCase savedTestCase = testCaseDao.save(testCase);
             logger.debug("Successfully saved test case with id: {}", savedTestCase.getId());
             return savedTestCase;
