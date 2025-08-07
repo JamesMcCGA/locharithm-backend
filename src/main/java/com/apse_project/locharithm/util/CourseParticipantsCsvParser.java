@@ -24,7 +24,7 @@ public class CourseParticipantsCsvParser {
         try (
                 BufferedReader reader = new BufferedReader(
                         new InputStreamReader(
-                                new BOMInputStream(file.getInputStream()), // This handles BOM
+                                new BOMInputStream(file.getInputStream()),
                                 StandardCharsets.UTF_8));
                 CSVParser csvParser = new CSVParser(reader, CSVFormat.DEFAULT
                         .withHeader()
